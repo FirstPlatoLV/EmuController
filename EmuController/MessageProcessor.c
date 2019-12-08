@@ -57,14 +57,17 @@ DeserializeJoyInput(
 			   
 			   The value count corresponds to the count of bits set in the MapByte for the given control type.
 
-			   Example: 0x10,		0x42,		0xFFFF, 0x8000 
-						INPUT_AXIS, 0b01000010, 65535,	32768
+			   Example: 
+			   
+			   [0x10, 0x42, 0xFFFF, 0x8000] 
+			   
+			   [INPUT_AXIS, 0b01000010, 65535, 32768]
 
-						The message above will result in the following updates:
+			   The message above will result in the following updates:
 
-						PJOYSTICK_INPUT_REPORT Report;
-						Report->Axes[1] = 65535;
-						Report->Axes[6] = 32768;
+			   PJOYSTICK_INPUT_REPORT Report;
+			   Report->Axes[1] = 65535;
+			   Report->Axes[6] = 32768;
 	--*/
 
 	while (i < msgHeader->MessageLength)
