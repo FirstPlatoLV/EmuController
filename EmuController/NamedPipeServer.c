@@ -134,76 +134,9 @@ DWORD WINAPI InputPipeServerThread(
 {
 	/* Params = WDFDEVICE */
 	PDEVICE_CONTEXT     devContext = DeviceGetContext(Params);
-	//HANDLE pipeHandle = devContext->InputPipeHandle;
 	DWORD bytesRead;
 	UCHAR buffer[BUFFER_SIZE];
 	PQUEUE_CONTEXT   queueContext;
-
-	//UNREFERENCED_PARAMETER(devContext);
-
-	//PSECURITY_ATTRIBUTES pSa = NULL;
-	//// Prepare the security attributes (the lpSecurityAttributes parameter in 
-	//// CreateNamedPipe) for the pipe. This is optional. If the 
-	//// lpSecurityAttributes parameter of CreateNamedPipe is NULL, the named 
-	//// pipe gets a default security descriptor and the handle cannot be 
-	//// inherited. The ACLs in the default security descriptor of a pipe grant 
-	//// full control to the LocalSystem account, (elevated) administrators, 
-	//// and the creator owner. They also give only read access to members of 
-	//// the Everyone group and the anonymous account. However, if you want to 
-	//// customize the security permission of the pipe, (e.g. to allow 
-	//// Authenticated Users to read from and write to the pipe), you need to 
-	//// create a SECURITY_ATTRIBUTES structure.
-
-	//if (!CreatePipeSecurity(&pSa))
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"CreatePipeSecurity failed with %d.\n", GetLastError()
-	//	);
-	//	FreePipeSecurity(pSa);
-	//	pSa = NULL;
-	//	return -1;
-	//}
-
-
-
-	//LPWSTR pipeName = (LPWSTR)devContext->PipeServerAttributes.InputPipePathName;
-	//size_t bufferCount = sizeof(devContext->PipeServerAttributes.InputPipePathName);
-
-
-	//int res = swprintf_s(pipeName, bufferCount, PszPipeIdFormat, PszLocalPipeTxt, devContext->HidDeviceAttributes.VendorID, devContext->HidDeviceAttributes.ProductID, PszInputPipeSpec);
-	//if (res == 0 || pipeName == NULL)
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"Failed generating input pipe name."
-	//	);
-
-	//	return -1;
-	//}
-
-
-	//pipeHandle = CreateNamedPipe(
-	//	pipeName,    // pipe name 
-	//	/* write access, async */
-	//	PIPE_ACCESS_INBOUND,
-	//	/* Byte buffer transferred, blocking operation */
-	//	PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
-	//	INSTANCES,   // max. instances
-	//	BUFFER_SIZE,  // output buffer size 
-	//	BUFFER_SIZE,  // input buffer size 
-	//	INFINITE,   // client time-out 
-	//	pSa
-	//);
-
-
-
-	//if (pipeHandle == INVALID_HANDLE_VALUE)
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"CreateNamedPipe failed with %d.\n", GetLastError()
-	//	);
-
-	//	return -1;
-	//}
 
 	while (1)
 
@@ -249,7 +182,9 @@ DWORD WINAPI InputPipeServerThread(
 					break;
 
 				}
-				RtlCopyMemory(&queueContext->DeviceContext->JoyInputReport, &buffer + 2, sizeof(JOYSTICK_INPUT_REPORT));
+
+				RtlCopyMemory(&queueContext->DeviceContext->JoyInputReport, &buffer[MESSAGE_HEADER_LEN], sizeof(JOYSTICK_INPUT_REPORT));
+
 				CompleteReadRequest(devContext);
 				break;
 			}
@@ -264,7 +199,7 @@ DWORD WINAPI InputPipeServerThread(
 
 				}
 
-				RtlCopyMemory(&queueContext->DeviceContext->JoyPidStateReport, &buffer + 2, sizeof(PID_STATE_REPORT));
+				RtlCopyMemory(&queueContext->DeviceContext->JoyPidStateReport, &buffer[MESSAGE_HEADER_LEN], sizeof(PID_STATE_REPORT));
 				CompleteReadRequest(devContext);
 				break;
 			}
@@ -319,76 +254,6 @@ DWORD WINAPI PidPipeServerThread(
 {
 	/* Params = WDFDEVICE */
 	PDEVICE_CONTEXT     devContext = DeviceGetContext(Params);
-	//HANDLE pipeHandle;
-
-	//PQUEUE_CONTEXT queueContext;
-	//DWORD bytesRead;
-	//UCHAR buffer[BUFFER_SIZE];
-
-	//UNREFERENCED_PARAMETER(devContext);
-
-	//PSECURITY_ATTRIBUTES pSa = NULL;
-
-	//// Prepare the security attributes (the lpSecurityAttributes parameter in 
-	//// CreateNamedPipe) for the pipe. This is optional. If the 
-	//// lpSecurityAttributes parameter of CreateNamedPipe is NULL, the named 
-	//// pipe gets a default security descriptor and the handle cannot be 
-	//// inherited. The ACLs in the default security descriptor of a pipe grant 
-	//// full control to the LocalSystem account, (elevated) administrators, 
-	//// and the creator owner. They also give only read access to members of 
-	//// the Everyone group and the anonymous account. However, if you want to 
-	//// customize the security permission of the pipe, (e.g. to allow 
-	//// Authenticated Users to read from and write to the pipe), you need to 
-	//// create a SECURITY_ATTRIBUTES structure.
-
-	//if (!CreatePipeSecurity(&pSa))
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"CreatePipeSecurity failed with %d.\n", GetLastError()
-	//	);
-	//	FreePipeSecurity(pSa);
-	//	pSa = NULL;
-	//	return 0;
-	//}
-
-
-	//LPWSTR pipeName = (LPWSTR)devContext->PipeServerAttributes.PidPipePathName;
-	//size_t bufferCount = sizeof(devContext->PipeServerAttributes.PidPipePathName);
-
-	//int res = swprintf_s(pipeName, bufferCount, PszPipeIdFormat, PszLocalPipeTxt, devContext->HidDeviceAttributes.VendorID, devContext->HidDeviceAttributes.ProductID, PszPidPipeSpec);
-	//if (res == 0 || pipeName == NULL)
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"Failed generating FFB pipe name."
-	//	);
-
-	//	return 0;
-	//}
-
-
-	//pipeHandle = CreateNamedPipe(
-	//	pipeName,    // pipe name 
-	//	/* write access, async */
-	//	PIPE_ACCESS_DUPLEX,
-	//	/* Byte buffer transferred, blocking operation */
-	//	PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
-	//	INSTANCES,   // max. instances
-	//	BUFFER_SIZE,  // output buffer size 
-	//	BUFFER_SIZE,  // input buffer size 
-	//	INFINITE,   // client time-out 
-	//	pSa
-	//);
-
-
-
-	//if (pipeHandle == INVALID_HANDLE_VALUE)
-	//{
-	//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-	//		"CreateNamedPipe failed with %d.\n", GetLastError()
-	//	);
-	//	return 0;
-	//}
-
 
 	if (!ConnectNamedPipe(devContext->PidPipeHandle, NULL))
 	{
@@ -404,9 +269,6 @@ DWORD WINAPI PidPipeServerThread(
 	);
 
 	devContext->PipeServerAttributes.PidPipeClientConnected = TRUE;
-
-	//queueContext = QueueGetContext(devContext->DefaultQueue);
-	//WdfTimerStart(queueContext->Timer, WDF_REL_TIMEOUT_IN_SEC(1));
 
 	return 0;
 
