@@ -2,29 +2,75 @@
 #include "messageprocessor.tmh"
 
 
-
 BOOL
-IsBitSet(UCHAR Value, INT Bit)
+IsBitSet(
+	UCHAR Value, 
+	INT Bit)
 {
 	BOOL result = 0;
 	return result = (Value >> Bit) & 1U;
 }
 
-BOOL 
-DeserializeJoyInput(UCHAR* controllerInputMessage, JOYSTICK_INPUT_REPORT* report)
+VOID 
+DeserializeJoyInput(
+	_In_ UCHAR* JoystickInputMessage, 
+	_Out_ JOYSTICK_INPUT_REPORT* Report)
 {
-	PMESSAGE_HEADER msgHeader = (PMESSAGE_HEADER)controllerInputMessage;
 
+	/*++
 
+	Routine Description:
 
-	PJOYSTICK_INPUT_REPORT inputReport = (PJOYSTICK_INPUT_REPORT)report;
+		 Deserializes message received from named pipe client.
+
+	Arguments:
+
+		ControllerInputMessage - The message sent by named pipe client
+		Report - Pointer to JOYSTIC_INPUT_REPORT struct that will be updated with values in ControllerInputMessage
+
+	Return Value:
+
+		VOID
+
+	--*/
+
+	PMESSAGE_HEADER msgHeader = (PMESSAGE_HEADER)JoystickInputMessage;
+
+	PJOYSTICK_INPUT_REPORT inputReport = (PJOYSTICK_INPUT_REPORT)Report;
 
 	INT i = sizeof(MESSAGE_HEADER);
+
+
+	/*++
+
+		The JoystickInputMessage has the following format:
+		ControlId byte = INPUT_AXIS | INPUT_BUTTON | INPUT_DPAD
+
+		Mapbyte - Contains information about which values for a given control array are to be updated.
+				  For example, given 8 axes defined in HID descriptor, 
+				  the set bits in the MapByte correspond to indices of Axes array in JOYSTICK_INPUT_REPORT
+
+		Data - The actual values for the control with following sizes:
+			   INPUT_AXIS = USHORT
+			   INPUT_BUTTON = USHORT (each USHORT represents state of 16 buttons, where bit set = BUTTON DOWN)
+			   INPUT_DPAD = UCHAR
+			   
+			   The value count corresponds to the count of bits set in the MapByte for the given control type.
+
+			   Example: 0x10,		0x42,		0xFFFF, 0x8000 
+						INPUT_AXIS, 0b01000010, 65535,	32768
+
+						The message above will result in the following updates:
+
+						PJOYSTICK_INPUT_REPORT Report;
+						Report->Axes[1] = 65535;
+						Report->Axes[6] = 32768;
+	--*/
 
 	while (i < msgHeader->MessageLength)
 	{
 
-		switch (controllerInputMessage[i])
+		switch (JoystickInputMessage[i])
 		{
 			case INPUT_AXIS:
 			{
@@ -33,9 +79,9 @@ DeserializeJoyInput(UCHAR* controllerInputMessage, JOYSTICK_INPUT_REPORT* report
 				int readBytes = 0;
 				for (int a = 0; a < AXIS_COUNT; a++)
 				{
-					if (IsBitSet(controllerInputMessage[i], a))
+					if (IsBitSet(JoystickInputMessage[i], a))
 					{
-						inputReport->Axes[a] = controllerInputMessage[offset + 1] << 8 | controllerInputMessage[offset];
+						inputReport->Axes[a] = JoystickInputMessage[offset + 1] << 8 | JoystickInputMessage[offset];
 						offset += sizeof(USHORT);
 						readBytes += sizeof(USHORT);
 					}
@@ -51,9 +97,9 @@ DeserializeJoyInput(UCHAR* controllerInputMessage, JOYSTICK_INPUT_REPORT* report
 				int readBytes = 0;
 				for (int a = 0; a < BUTTON_SET_COUNT; a++)
 				{
-					if (IsBitSet(controllerInputMessage[i], a))
+					if (IsBitSet(JoystickInputMessage[i], a))
 					{
-						inputReport->Buttons[a] = controllerInputMessage[offset + 1] << 8 | controllerInputMessage[offset];
+						inputReport->Buttons[a] = JoystickInputMessage[offset + 1] << 8 | JoystickInputMessage[offset];
 						offset += sizeof(USHORT);
 						readBytes += sizeof(USHORT);
 					}
@@ -69,9 +115,9 @@ DeserializeJoyInput(UCHAR* controllerInputMessage, JOYSTICK_INPUT_REPORT* report
 				int readBytes = 0;
 				for (int a = 0; a < DPAD_COUNT; a++)
 				{
-					if (IsBitSet(controllerInputMessage[i], a))
+					if (IsBitSet(JoystickInputMessage[i], a))
 					{
-						inputReport->HatSwitches[a] = controllerInputMessage[offset];
+						inputReport->HatSwitches[a] = JoystickInputMessage[offset];
 						offset += sizeof(UCHAR);
 						readBytes += sizeof(UCHAR);
 					}
@@ -82,24 +128,42 @@ DeserializeJoyInput(UCHAR* controllerInputMessage, JOYSTICK_INPUT_REPORT* report
 			}
 			default:
 			{
-				SetDefaultControllerState(report);
+				SetDefaultControllerState(Report);
 				TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 					"DeserializeInput failed: Malformed message.\n"
 				);
-				return 0;
+				return;
 			}
 		}
 
 	}
-	report = inputReport;
-	return i;
+	Report = inputReport;
 }
 
 VOID
-SetDefaultControllerState(JOYSTICK_INPUT_REPORT* report)
+SetDefaultControllerState(
+	_Out_ JOYSTICK_INPUT_REPORT* Report)
 {
 
-	PJOYSTICK_INPUT_REPORT inputReport = (PJOYSTICK_INPUT_REPORT)report;
+	/*++
+
+	Routine Description:
+
+		 Sets the default values for JOYSTICK_INPUT_REPORT consistent with a wheel like HID device.
+		 Can be used to initialize JOYSTICK_INPUT_REPORT with valid data.
+
+	Arguments:
+
+		Report - Pointer to JOYSTIC_INPUT_REPORT struct that will be updated with the default values.
+
+	Return Value:
+
+		VOID
+
+	--*/
+
+
+	PJOYSTICK_INPUT_REPORT inputReport = (PJOYSTICK_INPUT_REPORT)Report;
 	inputReport->ReportId = JOY_INPUT_REPORT_ID;
 	
 	inputReport->Axes[0] = 32768;
@@ -120,6 +184,6 @@ SetDefaultControllerState(JOYSTICK_INPUT_REPORT* report)
 		inputReport->HatSwitches[i] = 0xFF;
 	}
 
-	report = inputReport;
+	Report = inputReport;
 
 }
