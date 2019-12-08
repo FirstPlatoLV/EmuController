@@ -46,7 +46,7 @@ DeserializeJoyInput(
 		The JoystickInputMessage has the following format:
 		ControlId byte = INPUT_AXIS | INPUT_BUTTON | INPUT_DPAD
 
-		Mapbyte - Contains information about which values for a given control array are to be updated.
+		MapByte - Contains information about which values for a given control array are to be updated.
 				  For example, given 8 axes defined in HID descriptor, 
 				  the set bits in the MapByte correspond to indices of Axes array in JOYSTICK_INPUT_REPORT
 
