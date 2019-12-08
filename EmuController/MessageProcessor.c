@@ -21,7 +21,7 @@ DeserializeJoyInput(
 
 	Routine Description:
 
-		 Deserializes message received from named pipe client.
+		Deserializes message received from named pipe client.
 
 	Arguments:
 
