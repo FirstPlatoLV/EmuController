@@ -180,21 +180,6 @@ Return Value:
 	// Store the device data in device extension.
 	//
 
-	//if (packet.reportId == PID_DEVICE_CONTROL_REPORT_ID)
-	//{
-	//	PPID_DEVICE_CONTROL_REPORT pDc = (PPID_DEVICE_CONTROL_REPORT)packet.reportBuffer;
-	//	if (pDc->DeviceControlCommand == PID_DEVICE_RESET_CMD)
-	//	{
-	//		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL, "Device reset requested.");
-	//		EffectBlockIndex = 0;
-	//	}
-
-	//}
-	//else if (packet.reportId == PID_SET_EFFECT_REPORT_ID)
-	//{
-	//	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL, "Set effect report.");
-	//}
-
 	QueueContext->DeviceContext->ReportPacket = packet;
 
 	WriteResponseToPidClient(QueueContext);
@@ -402,9 +387,6 @@ Return Value:
 		pidPoolReport->RamPoolSize = 65535;
 		pidPoolReport->SharedParameterBlocks = 0;
 		pidPoolReport->SimultaneousEffectsMax = MAX_EFFECT_BLOCKS;
-
-		//packet.reportBuffer = (PUCHAR)pidPoolReport;
-
 
 		break;
 	}
