@@ -46,8 +46,15 @@ CreateNamedPipeServer(
 	inputPipeName = (LPWSTR)devContext->PipeServerAttributes.InputPipePathName;
 	pidPipeName = (LPWSTR)devContext->PipeServerAttributes.PidPipePathName;
 	
-	// The pipe name is generated using VendorId and ProductId values, latter of which is specified in the .inf for each EmuController device
-	int res = swprintf_s(inputPipeName, bufferCount, PszPipeIdFormat, PszLocalPipeTxt, devContext->HidDeviceAttributes.VendorID, devContext->HidDeviceAttributes.ProductID, PszInputPipeSuffix);
+	// The pipe name is generated using VendorId and ProductId values, 
+	// latter of which is specified in the .inf for each EmuController device,
+	int res = swprintf_s(inputPipeName, 
+		bufferCount, 
+		PszPipeIdFormat, 
+		PszLocalPipeTxt, 
+		devContext->HidDeviceAttributes.VendorID, 
+		devContext->HidDeviceAttributes.ProductID, 
+		PszInputPipeSuffix);
 	
 	if (res == 0 || inputPipeName == NULL)
 	{
@@ -58,7 +65,13 @@ CreateNamedPipeServer(
 		return 1;
 	}
 	
-	res = swprintf_s(pidPipeName, bufferCount, PszPipeIdFormat, PszLocalPipeTxt, devContext->HidDeviceAttributes.VendorID, devContext->HidDeviceAttributes.ProductID, PszPidPipeSuffix);
+	res = swprintf_s(pidPipeName, 
+		bufferCount, 
+		PszPipeIdFormat, 
+		PszLocalPipeTxt, 
+		devContext->HidDeviceAttributes.VendorID, 
+		devContext->HidDeviceAttributes.ProductID, 
+		PszPidPipeSuffix);
 	
 	
 	if (res == 0 || pidPipeName == NULL)
@@ -71,9 +84,12 @@ CreateNamedPipeServer(
 	}
 
 
-	// Creating two named pipe servers for handling input report updates from client and optionally FFB data packets redirected from driver to the client.
-	// Since only one instance is allowed for each named pipe server, attempting to create another instance with same name will result in error,
-	// which we can use to prevent users from installing multiple Emucontroller devices with the same VendorId & ProductId,
+	// Creating two named pipe servers for handling input report updates 
+	// from client and optionally FFB data packets redirected from driver to the client.
+	// Since only one instance is allowed for each named pipe server, 
+	// attempting to create another instance with same name will result in error,
+	// which we can use to prevent users from installing multiple Emucontroller devices 
+	// with the same VendorId & ProductId,
 
 	devContext->InputPipeHandle = CreateNamedPipe(
 		inputPipeName,    // Pipe name 
@@ -142,7 +158,8 @@ DWORD WINAPI InputPipeServerThread(
 
 
 	// Processes named pipe server operations synchronously. 
-	// All calls are blocking, but since this runs in a separate thread, it shouldn't be a problem.
+	// All calls are blocking, but this loop runs in a separate thread.
+
 	while (1)
 
 	{
@@ -162,7 +179,8 @@ DWORD WINAPI InputPipeServerThread(
 		}
 
 		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-			"Input client connected to %ws\n", (LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
+			"Input client connected to %ws\n", 
+			(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
 		);
 
 		queueContext = QueueGetContext(devContext->ManualQueue);
@@ -172,14 +190,21 @@ DWORD WINAPI InputPipeServerThread(
 
 
 		// This loop will continue as long as client is connected and messages it sends are valid.
-		// The ReadFile will return false as soon as client drops, even if it doesn't close the pipe handle properly.
-		while (ReadFile(devContext->InputPipeHandle, buffer, BUFFER_SIZE, &bytesRead, NULL))
+		// The ReadFile will return false as soon as client drops, 
+		// even if it doesn't close the pipe handle properly.
+		while (ReadFile(devContext->InputPipeHandle, 
+			buffer, 
+			BUFFER_SIZE, 
+			&bytesRead, 
+			NULL))
 		{
 			switch (buffer[0])
 			{
 			// Contains partial updates for JoystickInputReport that need to be processed first.
-			// This is useful for event based updates from client, which contains only controls that have changed,
-			// consequently, anything that is not updated explicitly will remain the same as it was in previous update.
+			// This is useful for event based updates from client, 
+		    // which contains only controls that have changed,
+			// consequently, anything that is not updated explicitly 
+		    // will remain the same as it was in previous update.
 			case JOY_INPUT_REPORT_PARTIAL:
 			{
 				DeserializeJoyInput(buffer, &queueContext->DeviceContext->JoyInputReport);
@@ -187,44 +212,54 @@ DWORD WINAPI InputPipeServerThread(
 				break;
 			}
 			// Contains the full JOYSTICK_INPUT_REPORT as array of bytes.
-			// Client will likely send this report when updates are polled continously at the set interval
+			// Client will likely send this report when updates 
+			// are polled continously at the set interval
 			// instead of waiting for update event to trigger.
 			case JOY_INPUT_REPORT_FULL:
 			{
 				if (buffer[1] != sizeof(JOYSTICK_INPUT_REPORT))
 				{
 					TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-						"JOYSTICK_INPUT_REPORT has incorrect size. Expected: %d, Received: %d\n", sizeof(JOYSTICK_INPUT_REPORT), buffer[1]
+						"JOYSTICK_INPUT_REPORT has incorrect size. Expected: %d, Received: %d\n", 
+						sizeof(JOYSTICK_INPUT_REPORT), 
+						buffer[1]
 					);
 					break;
 
 				}
 
-				RtlCopyMemory(&queueContext->DeviceContext->JoyInputReport, &buffer[MESSAGE_HEADER_LEN], sizeof(JOYSTICK_INPUT_REPORT));
+				RtlCopyMemory(&queueContext->DeviceContext->JoyInputReport, 
+					&buffer[MESSAGE_HEADER_LEN], 
+					sizeof(JOYSTICK_INPUT_REPORT));
 
 				CompleteReadRequest(devContext, buffer[0]);
 				break;
 			}
 			// Contains the full PID_STATE_REPORT as array of bytes. 
-			// There appears to be no need to send this report due to the nature of EmuController being a virtual device.
+			// There appears to be no need to send this report 
+			// due to the EmuController being a virtual device.
 			case JOY_INPUT_PID_STATE_REPORT:
 			{
 				if (buffer[1] != sizeof(PID_STATE_REPORT))
 				{
 					TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-						"PID_STATE_REPORT has incorrect size. Expected: %d, Received: %d\n", sizeof(PID_STATE_REPORT), buffer[1]
+						"PID_STATE_REPORT has incorrect size. Expected: %d, Received: %d\n", 
+						sizeof(PID_STATE_REPORT), 
+						buffer[1]
 					);
 					break;
 
 				}
 
-				RtlCopyMemory(&queueContext->DeviceContext->JoyPidStateReport, &buffer[MESSAGE_HEADER_LEN], sizeof(PID_STATE_REPORT));
+				RtlCopyMemory(&queueContext->DeviceContext->JoyPidStateReport, 
+					&buffer[MESSAGE_HEADER_LEN], 
+					sizeof(PID_STATE_REPORT));
+
 				CompleteReadRequest(devContext, buffer[0]);
 				break;
 			}
 			default:
 			{
-
 				TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 					"Unknown ReportId: %d\n", buffer[0]
 				);
@@ -246,7 +281,8 @@ DWORD WINAPI InputPipeServerThread(
 
 		}
 		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-			"Input client disconnected from %ws\n", (LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
+			"Input client disconnected from %ws\n", 
+			(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
 		);
 
 
@@ -296,7 +332,8 @@ DWORD WINAPI PidPipeServerThread(
 	}
 
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-		"FFB client connected to %ws\n", (LPCWSTR)devContext->PipeServerAttributes.PidPipePathName
+		"FFB client connected to %ws\n", 
+		(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName
 	);
 
 	// Input pipe server will use this value to determine 
@@ -324,7 +361,8 @@ WriteResponseToPidClient(
 	if (!WriteFile(queueContext->DeviceContext->PidPipeHandle, 
 		queueContext->DeviceContext->ReportPacket.reportBuffer,
 		queueContext->DeviceContext->ReportPacket.reportBufferLen, 
-		&bytesWritten, NULL) || bytesWritten < queueContext->DeviceContext->ReportPacket.reportBufferLen)
+		&bytesWritten, NULL) || 
+		bytesWritten < queueContext->DeviceContext->ReportPacket.reportBufferLen)
 	{
 		DisconnectPidServer(queueContext->DeviceContext);		
 
@@ -355,7 +393,8 @@ DisconnectPidServer(
 	}
 	devContext->PipeServerAttributes.PidPipeClientConnected = FALSE;
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-		"FFB client disconnected from %ws\n", (LPWSTR)devContext->PipeServerAttributes.PidPipePathName
+		"FFB client disconnected from %ws\n", 
+		(LPWSTR)devContext->PipeServerAttributes.PidPipePathName
 	);
 }
 
