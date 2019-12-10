@@ -29,5 +29,14 @@ Device.c & Device.h
 Queue.c & Queue.h
     WDFQUEUE related functionality and callbacks.
 
+Ioctl.c & Ioctl.h
+    Functionality for handling various input/output control calls.
+
+NamedPipeServer.c & NamedPipeServer.h
+    Functionality for setting up a side-communication with driver via two named pipe server instances.
+
+MessageProcessor.c & MessageProcessor.h
+    Functionality for processing messages from input client that contains non-complete input report updates.
+
 Trace.h
     Definitions for WPP tracing.
