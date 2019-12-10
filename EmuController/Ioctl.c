@@ -455,9 +455,7 @@ Return Value:
 
 	if (packet.reportId == PID_NEW_EFFECT_REPORT_ID)
 	{
-		//PPID_NEW_EFFECT_REPORT pNer = (PPID_NEW_EFFECT_REPORT)packet.reportBuffer;
 		QueueContext->DeviceContext->EffectBlockIndex++;
-		//TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL, "Request to create new EffectId: %d in EffectBlockIndex: %d,", pNer->EffectType, EffectBlockIndex);
 	}
 
 
@@ -560,7 +558,6 @@ Return Value:
 
 	QueueContext->DeviceContext->ReportPacket = packet;
 
-	//WriteResponseToPidClient(QueueContext);
 	//
 	// Report how many bytes were copied
 	//
