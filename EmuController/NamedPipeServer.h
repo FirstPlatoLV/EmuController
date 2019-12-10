@@ -30,7 +30,8 @@ DisconnectPidServer(
 
 VOID
 CompleteReadRequest(
-	PDEVICE_CONTEXT devContext);
+	PDEVICE_CONTEXT devContext,
+	UCHAR ReportId);
 
 BOOL 
 CreatePipeSecurity(
