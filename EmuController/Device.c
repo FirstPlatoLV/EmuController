@@ -744,7 +744,9 @@ Return Value:
 
 		if (!NT_SUCCESS(status))
 		{
-			TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE, "GetProductIdFromRegistry failed with  %!STATUS!", status);
+			TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE, 
+				"GetProductIdFromRegistry failed with  %!STATUS!", 
+				status);
 			return status;
 		}
 
@@ -783,7 +785,8 @@ Return Value:
 			   status = STATUS_UNSUCCESSFUL;
 		   }
 
-		   TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE, "Device VID_%X&PID_%X added.", 
+		   TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+			   "Device VID_%X&PID_%X added.", 
 			   deviceContext->HidDeviceAttributes.VendorID, 
 			   deviceContext->HidDeviceAttributes.ProductID);
 		}
@@ -819,7 +822,8 @@ Return Value:
 		&hKey);
 	if (NT_SUCCESS(status)) {
 
-		RtlInitUnicodeString(&valueName, L"ProductId");
+		RtlInitUnicodeString(&valueName, 
+			L"ProductId");
 
 		status = WdfRegistryQueryULong(hKey,
 			&valueName,

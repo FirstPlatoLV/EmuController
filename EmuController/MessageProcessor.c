@@ -26,7 +26,8 @@ DeserializeJoyInput(
 	Arguments:
 
 		ControllerInputMessage - The message sent by named pipe client
-		Report - Pointer to JOYSTIC_INPUT_REPORT struct that will be updated with values in ControllerInputMessage
+		Report - Pointer to JOYSTIC_INPUT_REPORT struct that will be updated 
+				with values in ControllerInputMessage.
 
 	Return Value:
 
@@ -46,16 +47,19 @@ DeserializeJoyInput(
 		The JoystickInputMessage has the following format:
 		ControlId byte = INPUT_AXIS | INPUT_BUTTON | INPUT_DPAD
 
-		MapByte - Contains information about which values for a given control array are to be updated.
+		MapByte - Contains information about which values for a given 
+				  control array are to be updated.
 				  For example, given 8 axes defined in HID descriptor, 
-				  the set bits in the MapByte correspond to indices of Axes array in JOYSTICK_INPUT_REPORT
+				  the set bits in the MapByte correspond to indices of 
+				  Axes array in JOYSTICK_INPUT_REPORT
 
 		Data - The actual values for the control with following sizes:
 			   INPUT_AXIS = USHORT
-			   INPUT_BUTTON = USHORT (each USHORT represents state of 16 buttons, where bit set = BUTTON DOWN)
+			   INPUT_BUTTON = USHORT (each USHORT = 16 buttons, where bit set = BUTTON DOWN)
 			   INPUT_DPAD = UCHAR
 			   
-			   The value count corresponds to the count of bits set in the MapByte for the given control type.
+			   The value count corresponds to the count of bits set in the MapByte 
+			   for the given control type.
 
 			   Example: 
 			   
@@ -84,7 +88,8 @@ DeserializeJoyInput(
 				{
 					if (IsBitSet(JoystickInputMessage[i], a))
 					{
-						inputReport->Axes[a] = JoystickInputMessage[offset + 1] << 8 | JoystickInputMessage[offset];
+						inputReport->Axes[a] = JoystickInputMessage[offset + 1] << 8 | 
+												JoystickInputMessage[offset];
 						offset += sizeof(USHORT);
 						readBytes += sizeof(USHORT);
 					}
@@ -102,7 +107,8 @@ DeserializeJoyInput(
 				{
 					if (IsBitSet(JoystickInputMessage[i], a))
 					{
-						inputReport->Buttons[a] = JoystickInputMessage[offset + 1] << 8 | JoystickInputMessage[offset];
+						inputReport->Buttons[a] = JoystickInputMessage[offset + 1] << 8 | 
+													JoystickInputMessage[offset];
 						offset += sizeof(USHORT);
 						readBytes += sizeof(USHORT);
 					}
@@ -152,12 +158,14 @@ SetDefaultControllerState(
 
 	Routine Description:
 
-		 Sets the default values for JOYSTICK_INPUT_REPORT consistent with a wheel like HID device.
+		 Sets the default values for JOYSTICK_INPUT_REPORT 
+		 consistent with a wheel like HID device.
 		 Can be used to initialize JOYSTICK_INPUT_REPORT with valid data.
 
 	Arguments:
 
-		Report - Pointer to JOYSTIC_INPUT_REPORT struct that will be updated with the default values.
+		Report - Pointer to JOYSTICK_INPUT_REPORT struct that 
+		will be updated with the default values.
 
 	Return Value:
 

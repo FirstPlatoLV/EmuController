@@ -77,7 +77,9 @@ Return Value:
                  );
 
     if(!NT_SUCCESS(status)) {
-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_QUEUE, "WdfIoQueueCreate failed %!STATUS!", status);
+        TraceEvents(TRACE_LEVEL_ERROR, TRACE_QUEUE, 
+			"WdfIoQueueCreate failed %!STATUS!", 
+			status);
         return status;
     }
 
@@ -144,7 +146,9 @@ Return Value:
 		&queue);
 
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_QUEUE, "WdfIoManualQueueCreate failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_QUEUE, 
+			"WdfIoManualQueueCreate failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -204,7 +208,8 @@ Return Value:
 	queueContext = QueueGetContext(Queue);
 	deviceContext = DeviceGetContext(device);
 
-	if (deviceContext->HidDescriptor.bLength == 0 || deviceContext->HidDescriptor.DescriptorList[0].wReportLength == 0)
+	if (deviceContext->HidDescriptor.bLength == 0 || 
+		deviceContext->HidDescriptor.DescriptorList[0].wReportLength == 0)
 	{
 		WdfRequestComplete(Request, status);
 		return;

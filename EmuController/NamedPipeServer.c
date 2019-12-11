@@ -116,7 +116,8 @@ CreateNamedPipeServer(
 	);
 
 
-	if (devContext->InputPipeHandle == INVALID_HANDLE_VALUE || devContext->PidPipeHandle == INVALID_HANDLE_VALUE)
+	if (devContext->InputPipeHandle == INVALID_HANDLE_VALUE || 
+		devContext->PidPipeHandle == INVALID_HANDLE_VALUE)
 	{
 		TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 			"CreateNamedPipe failed with %d\n", GetLastError()

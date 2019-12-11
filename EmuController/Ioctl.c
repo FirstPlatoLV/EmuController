@@ -42,7 +42,9 @@ Return Value:
 
 	status = WdfRequestRetrieveOutputMemory(Request, &memory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveOutputMemory failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+	    "WdfRequestRetrieveOutputMemory failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -50,8 +52,10 @@ Return Value:
 	if (outputBufferLength < NumBytesToCopyFrom) {
 		status = STATUS_INVALID_BUFFER_SIZE;
 
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestCopyFromBuffer: buffer too small. Size %d, expect %d\n",
-			(int)outputBufferLength, (int)NumBytesToCopyFrom);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestCopyFromBuffer: buffer too small. Size %d, expect %d\n",
+			(int)outputBufferLength, 
+			(int)NumBytesToCopyFrom);
 		return status;
 	}
 
@@ -60,7 +64,8 @@ Return Value:
 		SourceBuffer,
 		NumBytesToCopyFrom);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfMemoryCopyFromBuffer failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+		"WdfMemoryCopyFromBuffer failed %!STATUS!", status);
 		return status;
 	}
 
@@ -125,7 +130,9 @@ Return Value:
 		Request,
 		QueueContext->DeviceContext->ManualQueue);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestForwardToIoQueue failed with %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+		"WdfRequestForwardToIoQueue failed with %!STATUS!", 
+			status);
 		*CompleteRequest = TRUE;
 
 	}
@@ -160,7 +167,9 @@ Return Value:
 		Request,
 		&packet);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -172,7 +181,8 @@ Return Value:
 
 	if (packet.reportBufferLen < sizeof(UCHAR)) {
 		status = STATUS_BUFFER_TOO_SMALL;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WriteReport: input buffer too small!");
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WriteReport: input buffer too small!");
 		return status;
 	}
 
@@ -217,15 +227,19 @@ RequestGetHidXferPacket_ToReadFromDevice(
 	//
 	status = WdfRequestRetrieveInputMemory(Request, &inputMemory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveInputMemory failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveInputMemory failed %!STATUS!", 
+			status);
 		return status;
 	}
 	inputBuffer = WdfMemoryGetBuffer(inputMemory, &inputBufferLength);
 
 	if (inputBufferLength < sizeof(UCHAR)) {
 		status = STATUS_INVALID_BUFFER_SIZE;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveInputMemory: input buffer. size %d, expect %d\n",
-			(int)inputBufferLength, (int)sizeof(UCHAR));
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveInputMemory: input buffer. size %d, expect %d\n",
+			(int)inputBufferLength, 
+			(int)sizeof(UCHAR));
 		return status;
 	}
 
@@ -236,7 +250,9 @@ RequestGetHidXferPacket_ToReadFromDevice(
 	//
 	status = WdfRequestRetrieveOutputMemory(Request, &outputMemory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveOutputMemory failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveOutputMemory failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -281,7 +297,9 @@ RequestGetHidXferPacket_ToWriteToDevice(
 	//
 	status = WdfRequestRetrieveOutputMemory(Request, &outputMemory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveOutputMemory failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveOutputMemory failed %!STATUS!",
+			status);
 		return status;
 	}
 	WdfMemoryGetBuffer(outputMemory, &outputBufferLength);
@@ -292,7 +310,9 @@ RequestGetHidXferPacket_ToWriteToDevice(
 	//
 	status = WdfRequestRetrieveInputMemory(Request, &inputMemory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveInputMemory failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveInputMemory failed %!STATUS!", 
+			status);
 		return status;
 	}
 	inputBuffer = WdfMemoryGetBuffer(inputMemory, &inputBufferLength);
@@ -327,7 +347,9 @@ Return Value:
 		Request,
 		&packet);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestGetHidXferPacket_ToReadFromDevice failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestGetHidXferPacket_ToReadFromDevice failed %!STATUS!", 
+			status);
 		return status;
 	}	
 
@@ -348,7 +370,8 @@ Return Value:
 
 	if (packet.reportBufferLen < sizeof(UCHAR)) {
 		status = STATUS_BUFFER_TOO_SMALL;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetFeature: input buffer too small!");
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"GetFeature: input buffer too small!");
 		return status;
 	}
 
@@ -399,7 +422,9 @@ Return Value:
 	default:
 	{
 		status = STATUS_NOT_IMPLEMENTED;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "Unknown ReportId: %d", packet.reportId);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"Unknown ReportId: %d", 
+			packet.reportId);
 		reportSize = 0;
 	}
 	}
@@ -438,7 +463,9 @@ Return Value:
 		Request,
 		&packet);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -449,7 +476,8 @@ Return Value:
 
 	if (packet.reportBufferLen < sizeof(UCHAR)) {
 		status = STATUS_BUFFER_TOO_SMALL;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "SetFeature: input buffer too small!");
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"SetFeature: input buffer too small!");
 		return status;
 	}
 
@@ -492,7 +520,9 @@ Return Value:
 		Request,
 		&packet);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestGetHidXferPacket_ToReadFromDevice failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestGetHidXferPacket_ToReadFromDevice failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -500,7 +530,8 @@ Return Value:
 
 	if (packet.reportBufferLen < sizeof(UCHAR)) {
 		status = STATUS_BUFFER_TOO_SMALL;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetInputReport: input buffer too small!");
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"GetInputReport: input buffer too small!");
 		return status;
 	}
 
@@ -534,7 +565,9 @@ Return Value:
 		Request,
 		&packet);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"RequestGetHidXferPacket_ToWriteToDevice failed %!STATUS!", 
+			status);
 		return status;
 	}
 
@@ -546,7 +579,8 @@ Return Value:
 	if (packet.reportBufferLen < sizeof(UCHAR)) {
 		status = STATUS_BUFFER_TOO_SMALL;
 
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetInputReport: input buffer too small!");
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"GetInputReport: input buffer too small!");
 		return status;
 	}
 
@@ -593,7 +627,9 @@ Return Value:
 
 	status = WdfRequestRetrieveInputMemory(Request, &inputMemory);
 	if (!NT_SUCCESS(status)) {
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "WdfRequestRetrieveInputMemory %!STATUS!", status);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"WdfRequestRetrieveInputMemory %!STATUS!", 
+			status);
 		return status;
 	}
 	inputBuffer = WdfMemoryGetBuffer(inputMemory, &inputBufferLength);
@@ -604,8 +640,10 @@ Return Value:
 	if (inputBufferLength < sizeof(ULONG))
 	{
 		status = STATUS_INVALID_BUFFER_SIZE;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetStringId: invalid input buffer. size %d, expect %d\n",
-			(int)inputBufferLength, (int)sizeof(ULONG));
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"GetStringId: invalid input buffer. size %d, expect %d\n",
+			(int)inputBufferLength, 
+			(int)sizeof(ULONG));
 		return status;
 	}
 
@@ -654,7 +692,9 @@ Return Value:
 		if (stringIndex != HID_DEVICE_STRING_INDEX)
 		{
 			status = STATUS_INVALID_PARAMETER;
-			TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetString: unknown string index %d\n", stringIndex);
+			TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+				"GetString: unknown string index %d\n", 
+				stringIndex);
 			return status;
 		}
 
@@ -706,7 +746,9 @@ Return Value:
 		break;
 	default:
 		status = STATUS_INVALID_PARAMETER;
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, "GetString: unkown string id %d\n", stringId);
+		TraceEvents(TRACE_LEVEL_ERROR, TRACE_IOCTL, 
+			"GetString: unkown string id %d\n", 
+			stringId);
 		return status;
 	}
 
