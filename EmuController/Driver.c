@@ -21,7 +21,7 @@ NTSTATUS
 DriverEntry(
     _In_ PDRIVER_OBJECT  DriverObject,
     _In_ PUNICODE_STRING RegistryPath
-    )
+)
 /*++
 
 Routine Description:
@@ -55,12 +55,15 @@ Return Value:
     //
     // Initialize WPP Tracing
     //
-#if UMDF_VERSION_MAJOR == 2 && UMDF_VERSION_MINOR == 0
-    WPP_INIT_TRACING(MYDRIVER_TRACING_ID);
-#else
-    WPP_INIT_TRACING( DriverObject, RegistryPath );
+#if WPP_ENABLED
+    {
+    #if UMDF_VERSION_MAJOR == 2 && UMDF_VERSION_MINOR == 0
+        WPP_INIT_TRACING(MYDRIVER_TRACING_ID);
+    #else
+        WPP_INIT_TRACING(DriverObject, RegistryPath);
+    #endif
+    }
 #endif
-
     TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "%!FUNC! Entry");
 
     //
@@ -160,9 +163,13 @@ Return Value:
     //
     // Stop WPP Tracing
     //
+#if defined(WPP_ENABLED)
+    {
 #if UMDF_VERSION_MAJOR == 2 && UMDF_VERSION_MINOR == 0
-    WPP_CLEANUP();
+        WPP_CLEANUP();
 #else
-    WPP_CLEANUP(WdfDriverWdmGetDriverObject((WDFDRIVER)DriverObject));
+        WPP_CLEANUP(WdfDriverWdmGetDriverObject((WDFDRIVER)DriverObject));
+#endif
+    }
 #endif
 }

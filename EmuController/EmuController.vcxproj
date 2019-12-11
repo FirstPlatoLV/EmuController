@@ -218,6 +218,8 @@
       <WppScanConfigurationData Condition="'%(ClCompile.ScanConfigurationData)' == ''">trace.h</WppScanConfigurationData>
       <AdditionalIncludeDirectories>..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>true</EnablePREfast>
+      <WppPreprocessorDefinitions>
+      </WppPreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
