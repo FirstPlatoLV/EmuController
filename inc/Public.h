@@ -78,11 +78,12 @@ typedef struct _MESSAGE_HEADER
 typedef struct _JOYSTICK_INPUT_REPORT
 {
 	UCHAR  ReportId;	// Report ID = 0x01
-	USHORT Buttons[8];	// Each 16-bit value represents a set of states of 16 buttons (Bit set = Button Down)
+	USHORT Buttons[8];	// Each 16-bit value represents a set of states of 16 buttons 
+	// (Bit set = Button Down)
 
 	UCHAR  HatSwitches[4];	// 8 possible states for each DPad, 
-							// 0 = North, with each next value advancing the position of DPad 45 degrees clock-wise. 
-							// 0xFF = Neutral state.
+	// 0 = North, with each next value advancing the position of DPad 45 degrees clock-wise. 
+	// 0xFF = Neutral state.
 
 	USHORT Axes[8];	// Unsigned 16-bit resolution axes.
 
@@ -160,7 +161,6 @@ typedef struct _PID_SET_CONDITION_REPORT
 	UCHAR ParameterBlockOffset : 4; // Value = 0 to 1
 	UCHAR TypeSpecificBlockOffsetInstance1 : 2; // Value = 0 to 1
 	UCHAR TypeSpecificBlockOffsetInstance2 : 2; // Value = 0 to 1
-													   // Collection: CA:Joystick CL:SetConditionReport
 	SHORT CpOffset;	// Value = -10000 to 10000
 	SHORT PositiveCoefficient; // Value = -10000 to 10000
 	SHORT NegativeCoefficient; // Value = -10000 to 10000
