@@ -250,7 +250,7 @@ typedef struct _PID_DEVICE_GAIN_REPORT
 
 typedef struct _PID_SET_CUSTOM_FORCE_REPORT
 {
-	UCHAR ReportId;	// Report ID = 0x1A
+	UCHAR ReportId;	// Report ID = 0x1C
 	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
 	UCHAR SampleCount; // Value = 0 to 255
 	USHORT SamplePeriod; // Value = 0 to 10000
