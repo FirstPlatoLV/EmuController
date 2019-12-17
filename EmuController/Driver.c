@@ -88,14 +88,10 @@ Return Value:
         TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, 
             "WdfDriverCreate failed %!STATUS!", 
             status);
-#if WPP_ENABLED
-        {
 #if UMDF_VERSION_MAJOR == 2 && UMDF_VERSION_MINOR == 0
-            WPP_CLEANUP();
+        WPP_CLEANUP();
 #else
-            WPP_CLEANUP(DriverObject);
-#endif
-        }
+        WPP_CLEANUP(DriverObject);
 #endif
         return status;
     }
