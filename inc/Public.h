@@ -114,17 +114,17 @@ typedef struct _PID_SET_EFFECT_REPORT
 	UCHAR ReportId;	// Report ID = 0x10
 	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
 	UCHAR EffectType;	// Constant = 1,
-						// Ramp = 2,
-						// Square = 3,
-						// Sine = 4,
-						// Triangle = 5,
-						// SawtoothUp = 6,
-						// SawtoothDown = 7,
-						// Spring = 8,
-						// Damper = 9,
-						// Inertia = 10,
-						// Friction = 11,
-						// CustomForce = 12
+				// Ramp = 2,
+				// Square = 3,
+				// Sine = 4,
+				// Triangle = 5,
+				// SawtoothUp = 6,
+				// SawtoothDown = 7,
+				// Spring = 8,
+				// Damper = 9,
+				// Inertia = 10,
+				// Friction = 11,
+				// CustomForce = 12
 
 	USHORT Duration;   // Value = 0 to 10000
 	USHORT TriggerRepeatInterval; // Value = 0 to 10000
@@ -137,9 +137,9 @@ typedef struct _PID_SET_EFFECT_REPORT
 	UCHAR DirectionEnable : 1; // Value = 0 to 1, Physical = Value
 	UCHAR : 5;	// Pad
 
-	USHORT DirectionInstance1;           // Value = 0 to 36000
-	USHORT DirectionInstance2;           // Value = 0 to 36000
-	USHORT StartDelay;                   // Value = 0 to 10000
+	USHORT DirectionInstance1;	// Value = 0 to 36000
+	USHORT DirectionInstance2;	// Value = 0 to 36000
+	USHORT StartDelay;	// Value = 0 to 10000
 } PID_SET_EFFECT_REPORT, * PPID_SET_EFFECT_REPORT;
 
 
@@ -216,8 +216,8 @@ typedef struct _PID_EFFECT_OPERATION_REPORT
 	UCHAR ReportId;	// Report ID = 0x18
 	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
 	UCHAR EffectOperation;	// Start = 1,
-							// StartSolo = 2,
-							// Stop = 3
+					// StartSolo = 2,
+					// Stop = 3
 	UCHAR LoopCount; // Value = 0 to 255;
 } PID_EFFECT_OPERATION_REPORT, * PPID_EFFECT_OPERATION_REPORT;
 
@@ -225,11 +225,11 @@ typedef struct _PID_DEVICE_CONTROL_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x19
 	UCHAR DeviceControlCommand;	// EnableActuactors = 1,
-								// DisableActuactors = 2,
-								// StopAllEffects = 3,
-								// Reset = 4,
-								// Pause = 5,
-								// Continue = 6
+						// DisableActuactors = 2,
+						// StopAllEffects = 3,
+						// Reset = 4,
+						// Pause = 5,
+						// Continue = 6
 
 } PID_DEVICE_CONTROL_REPORT, * PPID_DEVICE_CONTROL_REPORT;
 
@@ -260,17 +260,17 @@ typedef struct _PID_NEW_EFFECT_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x20
 	UCHAR EffectType;	// Constant = 1,
-						// Ramp = 2,
-						// Square = 3,
-						// Sine = 4,
-						// Triangle = 5,
-						// SawtoothUp = 6,
-						// SawtoothDown = 7,
-						// Spring = 8,
-						// Damper = 9,
-						// Inertia = 10,
-						// Friction = 11,
-						// CustomForce = 12
+				// Ramp = 2,
+				// Square = 3,
+				// Sine = 4,
+				// Triangle = 5,
+				// SawtoothUp = 6,
+				// SawtoothDown = 7,
+				// Spring = 8,
+				// Damper = 9,
+				// Inertia = 10,
+				// Friction = 11,
+				// CustomForce = 12
 	UCHAR ByteCount;	// Applies to CustomForce only.
 
 } PID_NEW_EFFECT_REPORT, * PPID_NEW_EFFECT_REPORT;
@@ -280,10 +280,10 @@ typedef struct _PID_BLOCK_LOAD_REPORT
 {
 	UCHAR  ReportId;	// Report ID = 0x21
 	UCHAR  EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
-							 // Value = 0 if operation fails.
+					// Value = 0 if operation fails.
 	UCHAR  BlockLoadStatus; // Success = 1
-							// Full = 2
-							// Error = 3
+				// Full = 2
+				// Error = 3
 	USHORT RamPoolAvailable; //Value = 0 to 65535
 } PID_BLOCK_LOAD_REPORT, * PPID_BLOCK_LOAD_REPORT;
 
