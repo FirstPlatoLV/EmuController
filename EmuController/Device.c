@@ -76,7 +76,7 @@ HID_REPORT_DESCRIPTOR       G_DefaultReportDescriptor[] = {
 	0x09,0x92, // Usage PID State report 
 	0xA1,0x02, // Collection Datalink (logical)
 
-	   0x85,0x02, // Report ID 2
+	   0x85,PID_INPUT_REPORT_ID, // Report ID 2
 	   0x09,0x9F, // Usage Device is Pause 
 	   0x09,0xA0, // Usage Actuators Enabled
 	   0x09,0xA4, // Usage Safety Switch
@@ -187,7 +187,7 @@ HID_REPORT_DESCRIPTOR       G_DefaultReportDescriptor[] = {
 	   0x15,0x01, // Logical Minimum 1
 	   0x25,0x7F, // Logical Maximum 8
 	   0x35,0x01, // Physical Minimum 1
-	   0x45,0x7F, // Physical Maximum 8
+	   0x45,0x80, // Physical Maximum 8
 	   0x75,0x08, // Report Size 8
 	   0x95,0x01, // Report Count 1
 	   0x91,0x02, // Output (Variable)
@@ -465,7 +465,7 @@ HID_REPORT_DESCRIPTOR       G_DefaultReportDescriptor[] = {
 	0x05,0x0F, // Usage Page Physical Interface
 	0x09,0x77, // Usage Effect Operation Report
 	0xA1,0x02, // Collection Datalink
-	   0x85,PID_EFFECT_OPERATION_REPORT, // Report ID Ah (10d)
+	   0x85,PID_EFFECT_OPERATION_REPORT_ID, // Report ID Ah (10d)
 	   0x09,0x22, // Usage Effect Block Index
 	   0x15,0x01, // Logical Minimum 1
 	   0x25,MAX_EFFECT_BLOCKS, // Logical Maximum 28h (40d)
