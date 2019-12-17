@@ -20,20 +20,20 @@ EXTERN_C_START
 
 typedef UCHAR HID_REPORT_DESCRIPTOR, * PHID_REPORT_DESCRIPTOR;
 
-#define HID_DEVICE_VID             0xDEED  // VendorID
-#define HID_DEVICE_VERSION         0x0001
+#define HID_DEVICE_VID 0xDEED  // VendorID
+#define HID_DEVICE_VERSION 0x0001
 
-#define MAXIMUM_STRING_LENGTH				(126 * sizeof(WCHAR))
-#define HID_DEVICE_STRING					L"EmuController Device"  
-#define HID_DEVICE_MANUFACTURER_STRING		L"Maris Melbardis"  
-#define HID_DEVICE_PRODUCT_STRING			L"EmuController"  
-#define HID_DEVICE_SERIAL_NUMBER_STRING		L"23908912390812"  
-#define HID_DEVICE_STRING_INDEX				5
+#define MAXIMUM_STRING_LENGTH (126 * sizeof(WCHAR))
+#define HID_DEVICE_STRING L"EmuController Device"  
+#define HID_DEVICE_MANUFACTURER_STRING L"Maris Melbardis"  
+#define HID_DEVICE_PRODUCT_STRING L"EmuController"  
+#define HID_DEVICE_SERIAL_NUMBER_STRING L"23908912390812"  
+#define HID_DEVICE_STRING_INDEX 5
 
 
 typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES {
 
-	BOOL						PidPipeClientConnected;
+	BOOL PidPipeClientConnected;
 	WCHAR* InputPipePathName[48];
 	WCHAR* PidPipePathName[48];
 
@@ -48,20 +48,19 @@ typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES {
 
 typedef struct _DEVICE_CONTEXT
 {
-	WDFDEVICE					Device;
-	WDFQUEUE					DefaultQueue;
-	WDFQUEUE					ManualQueue;
-	HID_DESCRIPTOR				HidDescriptor;
-	PHID_REPORT_DESCRIPTOR		ReportDescriptor;
-	HID_DEVICE_ATTRIBUTES		HidDeviceAttributes;
-	HID_XFER_PACKET				ReportPacket;
-	HANDLE						InputPipeHandle;
-	HANDLE						PidPipeHandle;
-	JOYSTICK_INPUT_REPORT		JoyInputReport;
-	PID_STATE_REPORT			JoyPidStateReport;
-	UCHAR						EffectBlockIndex;
+	WDFDEVICE Device;
+	WDFQUEUE DefaultQueue;
+	WDFQUEUE ManualQueue;
+	HID_DESCRIPTOR HidDescriptor;
+	PHID_REPORT_DESCRIPTOR ReportDescriptor;
+	HID_DEVICE_ATTRIBUTES HidDeviceAttributes;
+	HID_XFER_PACKET ReportPacket;
+	HANDLE InputPipeHandle;
+	HANDLE PidPipeHandle;
+	JOYSTICK_INPUT_REPORT JoyInputReport;
+	PID_STATE_REPORT JoyPidStateReport;
+	UCHAR EffectBlockIndex;
 	NAMED_PIPE_SERVER_ATTRIBUTES PipeServerAttributes;
-
 } DEVICE_CONTEXT, *PDEVICE_CONTEXT;
 
 //

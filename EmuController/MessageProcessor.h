@@ -3,7 +3,7 @@ EXTERN_C_START
 // Control type ids in input report message
 #define INPUT_AXIS 0x10
 #define INPUT_BUTTON 0x11
-#define INPUT_DPAD	0x12
+#define INPUT_DPAD 0x12
 
 // Maximum number of value updates in message for each control type
 #define AXIS_COUNT 8
