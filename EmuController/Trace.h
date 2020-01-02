@@ -23,7 +23,7 @@ Environment:
 
 #define WPP_CONTROL_GUIDS                                              \
     WPP_DEFINE_CONTROL_GUID(                                           \
-        EmuControllerTraceGuid, (3afa687b,6cc9,4abd,b0ee,63f55365bc9b),                  \
+        EmuControllerTraceGuid, (3afa687b,6cc9,4abd,b0ee,63f55365bc9b),\
                                                                        \
         WPP_DEFINE_BIT(MYDRIVER_ALL_INFO)                              \
         WPP_DEFINE_BIT(TRACE_DRIVER)                                   \

@@ -186,6 +186,16 @@ Return Value:
 		return status;
 	}
 
+	if (packet.reportId == PID_DEVICE_CONTROL_REPORT_ID)
+	{
+		PPID_DEVICE_CONTROL_REPORT pDc = (PPID_DEVICE_CONTROL_REPORT)packet.reportBuffer;
+
+		if (pDc->DeviceControlCommand == PID_DEVICE_RESET_CMD)
+		{
+			QueueContext->DeviceContext->EffectBlockIndex = 0;
+		}
+	}
+
 	//
 	// Store the device data in device extension.
 	//

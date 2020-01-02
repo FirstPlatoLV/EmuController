@@ -1,17 +1,10 @@
 /*++
-
 Module Name:
-
-    device.h
-
+	device.h
 Abstract:
-
-    This file contains the device definitions.
-
+	This file contains the device definitions.
 Environment:
-
-    User-mode Driver Framework 2
-
+	User-mode Driver Framework 2
 --*/
 
 #include "public.h"
@@ -61,7 +54,7 @@ typedef struct _DEVICE_CONTEXT
 	PID_STATE_REPORT JoyPidStateReport;
 	UCHAR EffectBlockIndex;
 	NAMED_PIPE_SERVER_ATTRIBUTES PipeServerAttributes;
-} DEVICE_CONTEXT, *PDEVICE_CONTEXT;
+} DEVICE_CONTEXT, * PDEVICE_CONTEXT;
 
 //
 // This macro will generate an inline function called DeviceGetContext
@@ -75,8 +68,8 @@ WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(DEVICE_CONTEXT, DeviceGetContext)
 //
 NTSTATUS
 EmuControllerCreateDevice(
-    _Inout_ PWDFDEVICE_INIT DeviceInit
-    );
+	_Inout_ PWDFDEVICE_INIT DeviceInit
+);
 
 //
 // Function to retreive ProductId value from registry (under HKR hardware key)

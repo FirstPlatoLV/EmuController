@@ -73,6 +73,8 @@ typedef struct _MESSAGE_HEADER
 // Maximum number of EffectIndexBlocks & Simulatenous effects playing.
 #define MAX_EFFECT_BLOCKS 0x7F
 
+#define PID_DEVICE_RESET_CMD 0x04 
+
 #include <pshpack1.h>
 
 typedef struct _JOYSTICK_INPUT_REPORT
