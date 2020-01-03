@@ -135,15 +135,6 @@ CreateNamedPipeServer(
 		NULL
 	);
 
-	CreateThread(
-		NULL,
-		0,
-		PidPipeServerThread,
-		Params,
-		0,
-		NULL
-	);
-
 	return 0;
 }
 
@@ -188,6 +179,17 @@ DWORD WINAPI InputPipeServerThread(
 		
 		// Initializing JoyInputReport with default values.
 		SetDefaultControllerState(&queueContext->DeviceContext->JoyInputReport);
+
+
+		CreateThread(
+			NULL,
+			0,
+			PidPipeServerThread,
+			Params,
+			0,
+			NULL
+		);
+
 
 
 		// This loop will continue as long as client is connected and messages it sends are valid.
@@ -296,15 +298,6 @@ DWORD WINAPI InputPipeServerThread(
 		if (devContext->PipeServerAttributes.PidPipeClientConnected)
 		{
 			DisconnectPidServer(devContext);
-
-			CreateThread(
-				NULL,
-				0,
-				PidPipeServerThread,
-				Params,
-				0,
-				NULL
-			);
 		}
 	}
 
