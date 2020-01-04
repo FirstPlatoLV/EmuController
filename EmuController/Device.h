@@ -29,6 +29,8 @@ typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES {
 	BOOL PidPipeClientConnected;
 	WCHAR* InputPipePathName[48];
 	WCHAR* PidPipePathName[48];
+	HANDLE InputServerHandle;
+	HANDLE PidServerHandle;
 
 } NAMED_PIPE_SERVER_ATTRIBUTES, * PNAMED_PIPE_SERVER_ATTRIBUTES;
 

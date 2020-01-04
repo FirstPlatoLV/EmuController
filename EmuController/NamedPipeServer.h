@@ -4,7 +4,8 @@ EXTERN_C_START
 
 
 #define BUFFER_SIZE 128
-#define INSTANCES 1
+#define INPUT_INSTANCES 1
+#define PID_INSTANCES 1
 
 DWORD
 CreateNamedPipeServer(

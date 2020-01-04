@@ -95,7 +95,7 @@ CreateNamedPipeServer(
 		inputPipeName,    // Pipe name 
 		PIPE_ACCESS_INBOUND, // Server will be receiving messages only
 		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, // Data is read from the pipe as a stream of messages.
-		INSTANCES,   // No more than onw instance can be created for this pipe
+		INPUT_INSTANCES,   // No more than one instance can be created for this pipe
 		BUFFER_SIZE,  // Output buffer size 
 		BUFFER_SIZE,  // Input buffer size 
 		INFINITE,   // Client time-out 
@@ -108,7 +108,7 @@ CreateNamedPipeServer(
 							// we need to allow the client to set it's read mode to PIPE_READMODE_MESSAGE.
 
 		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,  // Data is read from the pipe as a stream of messages.
-		INSTANCES,    // No more than onw instance can be created for this pipe
+		PID_INSTANCES,    // No more than two instances can be created for this pipe
 		BUFFER_SIZE,  // Output buffer size 
 		BUFFER_SIZE,  // Input buffer size 
 		INFINITE,   // Client time-out 
@@ -126,7 +126,7 @@ CreateNamedPipeServer(
 		return 1;
 	}
 
-	CreateThread(
+	devContext->PipeServerAttributes.InputServerHandle = CreateThread(
 		NULL,
 		0,
 		InputPipeServerThread,
@@ -135,7 +135,7 @@ CreateNamedPipeServer(
 		NULL
 	);
 
-	CreateThread(
+	devContext->PipeServerAttributes.PidServerHandle = CreateThread(
 		NULL,
 		0,
 		PidPipeServerThread,
@@ -276,7 +276,7 @@ DWORD WINAPI InputPipeServerThread(
 				"DisconnectNamedPipe failed with %d\n", GetLastError()
 			);
 			CloseHandle(devContext->InputPipeHandle);
-			CloseHandle(devContext->PidPipeHandle);
+			//CloseHandle(devContext->PidPipeHandle);
 			return 0;
 
 		}
@@ -295,8 +295,11 @@ DWORD WINAPI InputPipeServerThread(
 		if (devContext->PipeServerAttributes.PidPipeClientConnected)
 		{
 			DisconnectPidServer(devContext);
-
-			CreateThread(
+			if (devContext->PipeServerAttributes.PidServerHandle != NULL)
+			{
+				CloseHandle(devContext->PipeServerAttributes.PidServerHandle);
+			}
+			devContext->PipeServerAttributes.PidServerHandle = CreateThread(
 				NULL,
 				0,
 				PidPipeServerThread,
@@ -319,9 +322,10 @@ DWORD WINAPI PidPipeServerThread(
 {
 	/* Params = WDFDEVICE */
 	PDEVICE_CONTEXT     devContext = DeviceGetContext(Params);
-
 	// The FFB pipe server is dependent on input pipe server,
 	// which will close and create this thread again if needed, so no loop here.
+
+
 	if (!ConnectNamedPipe(devContext->PidPipeHandle, NULL))
 	{
 		TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
@@ -332,13 +336,14 @@ DWORD WINAPI PidPipeServerThread(
 	}
 
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-		"FFB client connected to %ws\n", 
+		"FFB client connected to %ws\n",
 		(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName
 	);
 
 	// Input pipe server will use this value to determine 
 	// whether FFB named pipe should be stopped and server restarted.
 	devContext->PipeServerAttributes.PidPipeClientConnected = TRUE;
+
 
 	return 0;
 
@@ -365,8 +370,8 @@ WriteResponseToPidClient(
 		bytesWritten < queueContext->DeviceContext->ReportPacket.reportBufferLen)
 	{
 		DisconnectPidServer(queueContext->DeviceContext);		
-
-		CreateThread(
+		CloseHandle(queueContext->DeviceContext->PipeServerAttributes.PidServerHandle);
+		queueContext->DeviceContext->PipeServerAttributes.PidServerHandle = CreateThread(
 			NULL,
 			0,
 			PidPipeServerThread,
