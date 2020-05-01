@@ -5,7 +5,7 @@ EXTERN_C_START
 
 #define BUFFER_SIZE 128
 #define INPUT_INSTANCES 1
-#define PID_INSTANCES 1
+#define PID_INSTANCES 2
 
 DWORD
 CreateNamedPipeServer(
@@ -24,10 +24,6 @@ PidPipeServerThread(
 VOID
 WriteResponseToPidClient(
 	PQUEUE_CONTEXT queueContext);
-
-VOID
-DisconnectPidServer(
-	PDEVICE_CONTEXT devContext);
 
 VOID
 CompleteReadRequest(

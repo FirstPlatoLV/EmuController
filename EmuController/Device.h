@@ -24,14 +24,15 @@ typedef UCHAR HID_REPORT_DESCRIPTOR, * PHID_REPORT_DESCRIPTOR;
 #define HID_DEVICE_STRING_INDEX 5
 
 
-typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES {
-
-	BOOL PidPipeClientConnected;
+typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES 
+{
 	WCHAR* InputPipePathName[48];
 	WCHAR* PidPipePathName[48];
 	HANDLE InputServerHandle;
 	HANDLE PidServerHandle;
-
+	HANDLE InputPipeHandle;
+	HANDLE PidPipeHandle;
+	PSECURITY_ATTRIBUTES PipeSecurityAttr;
 } NAMED_PIPE_SERVER_ATTRIBUTES, * PNAMED_PIPE_SERVER_ATTRIBUTES;
 
 
@@ -50,8 +51,6 @@ typedef struct _DEVICE_CONTEXT
 	PHID_REPORT_DESCRIPTOR ReportDescriptor;
 	HID_DEVICE_ATTRIBUTES HidDeviceAttributes;
 	HID_XFER_PACKET ReportPacket;
-	HANDLE InputPipeHandle;
-	HANDLE PidPipeHandle;
 	JOYSTICK_INPUT_REPORT JoyInputReport;
 	PID_STATE_REPORT JoyPidStateReport;
 	UCHAR EffectBlockIndex;

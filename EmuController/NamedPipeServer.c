@@ -21,6 +21,7 @@ CreateNamedPipeServer(
 
 
 	PSECURITY_ATTRIBUTES pSa = NULL;
+
 	// Prepare the security attributes (the lpSecurityAttributes parameter in 
 	// CreateNamedPipe) for the pipe. This is optional. If the 
 	// lpSecurityAttributes parameter of CreateNamedPipe is NULL, the named 
@@ -42,6 +43,9 @@ CreateNamedPipeServer(
 		pSa = NULL;
 		return 1;
 	}
+
+
+	devContext->PipeServerAttributes.PipeSecurityAttr = pSa;
 
 	inputPipeName = (LPWSTR)devContext->PipeServerAttributes.InputPipePathName;
 	pidPipeName = (LPWSTR)devContext->PipeServerAttributes.PidPipePathName;
@@ -84,40 +88,19 @@ CreateNamedPipeServer(
 	}
 
 
-	// Creating two named pipe servers for handling input report updates 
-	// from client and optionally FFB data packets redirected from driver to the client.
-	// Since only one instance is allowed for each named pipe server, 
-	// attempting to create another instance with same name will result in error,
-	// which we can use to prevent users from installing multiple Emucontroller devices 
-	// with the same VendorId & ProductId,
-
-	devContext->InputPipeHandle = CreateNamedPipe(
-		inputPipeName,    // Pipe name 
+	devContext->PipeServerAttributes.InputPipeHandle = CreateNamedPipe(
+		(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName,    // Pipe name 
 		PIPE_ACCESS_INBOUND, // Server will be receiving messages only
-		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, // Data is read from the pipe as a stream of messages.
+		PIPE_TYPE_MESSAGE | 
+		PIPE_READMODE_MESSAGE | // Data is read from the pipe as a stream of messages.
+		PIPE_WAIT, // blocking mode 
 		INPUT_INSTANCES,   // No more than one instance can be created for this pipe
 		BUFFER_SIZE,  // Output buffer size 
 		BUFFER_SIZE,  // Input buffer size 
-		INFINITE,   // Client time-out 
-		pSa
-	);
+		0,   // Client time-out 
+		devContext->PipeServerAttributes.PipeSecurityAttr);
 
-	devContext->PidPipeHandle = CreateNamedPipe(
-		pidPipeName,     // Pipe name 
-		PIPE_ACCESS_DUPLEX, // Although only server will be sending actual messages to client, 
-							// we need to allow the client to set it's read mode to PIPE_READMODE_MESSAGE.
-
-		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,  // Data is read from the pipe as a stream of messages.
-		PID_INSTANCES,    // No more than two instances can be created for this pipe
-		BUFFER_SIZE,  // Output buffer size 
-		BUFFER_SIZE,  // Input buffer size 
-		INFINITE,   // Client time-out 
-		pSa
-	);
-
-
-	if (devContext->InputPipeHandle == INVALID_HANDLE_VALUE || 
-		devContext->PidPipeHandle == INVALID_HANDLE_VALUE)
+	if (devContext->PipeServerAttributes.InputPipeHandle == INVALID_HANDLE_VALUE)
 	{
 		TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 			"CreateNamedPipe failed with %d\n", GetLastError()
@@ -125,6 +108,7 @@ CreateNamedPipeServer(
 
 		return 1;
 	}
+
 
 	devContext->PipeServerAttributes.InputServerHandle = CreateThread(
 		NULL,
@@ -157,7 +141,6 @@ DWORD WINAPI InputPipeServerThread(
 	UCHAR buffer[BUFFER_SIZE];
 	PQUEUE_CONTEXT   queueContext;
 
-
 	// Processes named pipe server operations synchronously. 
 	// All calls are blocking, but this loop runs in a separate thread.
 
@@ -166,11 +149,11 @@ DWORD WINAPI InputPipeServerThread(
 	{
 
 		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-			"Waiting for client to connect...");
+			"Waiting for input client to connect...");
 
 
 		// Will return only when a client attempts connection.
-		if (!ConnectNamedPipe(devContext->InputPipeHandle, NULL))
+		if (!ConnectNamedPipe(devContext->PipeServerAttributes.InputPipeHandle, NULL))
 		{
 			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 				"ConnectNamedPipe failed with %d\n", GetLastError()
@@ -192,7 +175,7 @@ DWORD WINAPI InputPipeServerThread(
 		// This loop will continue as long as client is connected and messages it sends are valid.
 		// The ReadFile will return false as soon as client drops, 
 		// even if it doesn't close the pipe handle properly.
-		while (ReadFile(devContext->InputPipeHandle, 
+		while (ReadFile(devContext->PipeServerAttributes.InputPipeHandle,
 			buffer, 
 			BUFFER_SIZE, 
 			&bytesRead, 
@@ -269,14 +252,13 @@ DWORD WINAPI InputPipeServerThread(
 		}
 
 		// Either a read error occured or client disconnected / dropped.
-		if (!DisconnectNamedPipe(devContext->InputPipeHandle))
+		if (!DisconnectNamedPipe(devContext->PipeServerAttributes.InputPipeHandle))
 		{
 
 			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
 				"DisconnectNamedPipe failed with %d\n", GetLastError()
 			);
-			CloseHandle(devContext->InputPipeHandle);
-			//CloseHandle(devContext->PidPipeHandle);
+			CloseHandle(devContext->PipeServerAttributes.InputPipeHandle);
 			return 0;
 
 		}
@@ -288,30 +270,9 @@ DWORD WINAPI InputPipeServerThread(
 
 		SetDefaultControllerState(&queueContext->DeviceContext->JoyInputReport);
 		CompleteReadRequest(devContext, JOY_INPUT_REPORT_FULL);
-
-		// If a client that listens for FFB packets is connected we should disconnect it now
-		// since it requires a client that sends input reports to be active.
-		// We then start the FFB pipe server thread again and wait for new connection from client.
-		if (devContext->PipeServerAttributes.PidPipeClientConnected)
-		{
-			DisconnectPidServer(devContext);
-			if (devContext->PipeServerAttributes.PidServerHandle != NULL)
-			{
-				CloseHandle(devContext->PipeServerAttributes.PidServerHandle);
-			}
-			devContext->PipeServerAttributes.PidServerHandle = CreateThread(
-				NULL,
-				0,
-				PidPipeServerThread,
-				Params,
-				0,
-				NULL
-			);
-		}
 	}
 
-	CloseHandle(devContext->InputPipeHandle);
-	CloseHandle(devContext->PidPipeHandle);
+	CloseHandle(devContext->PipeServerAttributes.InputPipeHandle);
 
 	return 0;
 
@@ -326,27 +287,98 @@ DWORD WINAPI PidPipeServerThread(
 	// which will close and create this thread again if needed, so no loop here.
 
 
-	if (!ConnectNamedPipe(devContext->PidPipeHandle, NULL))
-	{
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-			"ConnectNamedPipe failed with %d\n", GetLastError()
-		);
-		return 0;
-
-	}
-
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-		"FFB client connected to %ws\n",
-		(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName
-	);
-
-	// Input pipe server will use this value to determine 
-	// whether FFB named pipe should be stopped and server restarted.
-	devContext->PipeServerAttributes.PidPipeClientConnected = TRUE;
+		"Waiting for FFB client to connect...\n");
 
 
-	return 0;
 
+	devContext->PipeServerAttributes.PidPipeHandle = NULL;
+
+	while (1)
+	{
+
+		HANDLE hPipe = CreateNamedPipe(
+			(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName,             // pipe name 
+			PIPE_ACCESS_DUPLEX,       // read/write access 
+			PIPE_TYPE_MESSAGE |       // message type pipe 
+			PIPE_READMODE_MESSAGE |   // message-read mode 
+			PIPE_WAIT,                // blocking mode 
+			PIPE_UNLIMITED_INSTANCES,  // max. instances  
+			BUFFER_SIZE,              // output buffer size 
+			BUFFER_SIZE,              // input buffer size 
+			0,                        // client time-out 
+			devContext->PipeServerAttributes.PipeSecurityAttr);
+
+
+
+		if (hPipe == INVALID_HANDLE_VALUE)
+		{
+			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+				"CreateNamedPipe failed with %d\n", GetLastError()
+			);
+
+			return 0;
+		}
+
+
+		// Wait for the client to connect; if it succeeds, 
+		// the function returns a nonzero value. If the function
+		// returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
+
+		// Will return only when a client attempts connection.
+
+		if (!ConnectNamedPipe(hPipe, NULL))
+		{
+			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+				"ConnectNamedPipe failed with %d\n", GetLastError()
+			);
+
+			return 0;
+		}
+
+		if (devContext->PipeServerAttributes.PidPipeHandle != NULL)
+		{
+			if (!PeekNamedPipe(
+				devContext->PipeServerAttributes.PidPipeHandle,
+				NULL,
+				0,
+				NULL,
+				NULL,
+				NULL))
+			{
+
+				if (!DisconnectNamedPipe(devContext->PipeServerAttributes.PidPipeHandle))
+				{
+
+					TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+						"DisconnectNamedPipe failed with %d\n", GetLastError()
+					);
+					CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
+					devContext->PipeServerAttributes.PidPipeHandle = NULL;
+					continue;
+				}
+
+				TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
+					"Old FFB client lost. Changing client...\n");
+
+				CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
+			    devContext->PipeServerAttributes.PidPipeHandle = hPipe;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		else
+		{
+			devContext->PipeServerAttributes.PidPipeHandle = hPipe;
+		}
+
+		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
+			"FFB client connected to %ws\n",
+			(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName
+		);
+	}
 }
 
 VOID
@@ -354,55 +386,32 @@ WriteResponseToPidClient(
 	PQUEUE_CONTEXT queueContext
 )
 {
-	// If FFB named pipe has no client connected, no point in trying to send FFB packets.
-	if (!queueContext->DeviceContext->PipeServerAttributes.PidPipeClientConnected)
+	if (queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle == NULL ||
+		queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle == INVALID_HANDLE_VALUE)
 	{
 		return;
 	}
 
 	DWORD bytesWritten = 0;
-	
 
-	if (!WriteFile(queueContext->DeviceContext->PidPipeHandle, 
+	if (!WriteFile(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle,
 		queueContext->DeviceContext->ReportPacket.reportBuffer,
-		queueContext->DeviceContext->ReportPacket.reportBufferLen, 
-		&bytesWritten, NULL) || 
+		queueContext->DeviceContext->ReportPacket.reportBufferLen,
+		&bytesWritten, NULL) ||
 		bytesWritten < queueContext->DeviceContext->ReportPacket.reportBufferLen)
 	{
-		DisconnectPidServer(queueContext->DeviceContext);		
-		CloseHandle(queueContext->DeviceContext->PipeServerAttributes.PidServerHandle);
-		queueContext->DeviceContext->PipeServerAttributes.PidServerHandle = CreateThread(
-			NULL,
-			0,
-			PidPipeServerThread,
-			(LPVOID)queueContext->DeviceContext,
-			0,
-			NULL
-		);
+		if (!DisconnectNamedPipe(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle))
+		{
+
+			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+				"DisconnectNamedPipe failed with %d\n", GetLastError()
+			);
+			CloseHandle(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle);
+			queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle = NULL;
+			return;
+		}
 	}
 }
-
-VOID
-DisconnectPidServer(
-	PDEVICE_CONTEXT devContext)
-{
-	if (!DisconnectNamedPipe(devContext->PidPipeHandle))
-	{
-
-		TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-			"DisconnectNamedPipe failed with %d\n", GetLastError()
-		);
-		CloseHandle(devContext->PidPipeHandle);
-		return;
-
-	}
-	devContext->PipeServerAttributes.PidPipeClientConnected = FALSE;
-	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
-		"FFB client disconnected from %ws\n", 
-		(LPWSTR)devContext->PipeServerAttributes.PidPipePathName
-	);
-}
-
 
 
 VOID 
