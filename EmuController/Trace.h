@@ -61,7 +61,7 @@ Environment:
 //
 
 
-#define WPP_ENABLED 1
+#define WPP_ENABLED 0
 
 #if UMDF_VERSION_MAJOR == 2 && UMDF_VERSION_MINOR == 0
     #define MYDRIVER_TRACING_ID      L"Microsoft\\UMDF2.0\\EmuController V1.0"
