@@ -88,6 +88,12 @@ CreateNamedPipeServer(
 	}
 
 
+
+	// We can use the INPUT_INSTANCES = 1 value to prevent users from accidentally installing
+	// more than one device with the same Vendor and Product ID, since when driver is first
+	// initialized, if there is already a named pipe sever instance with the same InputPipePathName,
+	// the CreateNamedPipe() will fail.
+
 	devContext->PipeServerAttributes.InputPipeHandle = CreateNamedPipe(
 		(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName,    // Pipe name 
 		PIPE_ACCESS_INBOUND, // Server will be receiving messages only
@@ -109,7 +115,7 @@ CreateNamedPipeServer(
 		return 1;
 	}
 
-
+	// Create a thread for handling input pipe server.
 	devContext->PipeServerAttributes.InputServerHandle = CreateThread(
 		NULL,
 		0,
@@ -119,6 +125,7 @@ CreateNamedPipeServer(
 		NULL
 	);
 
+	// Create a thread for handling PID pipe server related data.
 	devContext->PipeServerAttributes.PidServerHandle = CreateThread(
 		NULL,
 		0,
@@ -175,6 +182,7 @@ DWORD WINAPI InputPipeServerThread(
 		// This loop will continue as long as client is connected and messages it sends are valid.
 		// The ReadFile will return false as soon as client drops, 
 		// even if it doesn't close the pipe handle properly.
+		
 		while (ReadFile(devContext->PipeServerAttributes.InputPipeHandle,
 			buffer, 
 			BUFFER_SIZE, 
@@ -267,13 +275,13 @@ DWORD WINAPI InputPipeServerThread(
 			(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
 		);
 
-
+		// Restore the default state of the device, to prevent unexpected behaviour 
+		// in applications that access the device.
 		SetDefaultControllerState(&queueContext->DeviceContext->JoyInputReport);
 		CompleteReadRequest(devContext, JOY_INPUT_REPORT_FULL);
 	}
 
 	CloseHandle(devContext->PipeServerAttributes.InputPipeHandle);
-
 	return 0;
 
 }
@@ -283,19 +291,17 @@ DWORD WINAPI PidPipeServerThread(
 {
 	/* Params = WDFDEVICE */
 	PDEVICE_CONTEXT     devContext = DeviceGetContext(Params);
-	// The FFB pipe server is dependent on input pipe server,
-	// which will close and create this thread again if needed, so no loop here.
-
 
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
 		"Waiting for FFB client to connect...\n");
-
-
 
 	devContext->PipeServerAttributes.PidPipeHandle = NULL;
 
 	while (1)
 	{
+
+		// Create a named pipe server instance. While max instances is set to
+		// PIPE_UNLIMITED_INSTANCES, there will never ever be more than two instances.
 
 		HANDLE hPipe = CreateNamedPipe(
 			(LPCWSTR)devContext->PipeServerAttributes.PidPipePathName,             // pipe name 
@@ -336,8 +342,12 @@ DWORD WINAPI PidPipeServerThread(
 			return 0;
 		}
 
+		// A client has connected to named pipe server, but it is possible
+		// that there is already a client present.
 		if (devContext->PipeServerAttributes.PidPipeHandle != NULL)
 		{
+			// If so, we need to see if the client is still alive.
+			// If not, the PeekNamedPipe() will fail.
 			if (!PeekNamedPipe(
 				devContext->PipeServerAttributes.PidPipeHandle,
 				NULL,
@@ -346,29 +356,31 @@ DWORD WINAPI PidPipeServerThread(
 				NULL,
 				NULL))
 			{
-
-				if (!DisconnectNamedPipe(devContext->PipeServerAttributes.PidPipeHandle))
-				{
-
-					TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-						"DisconnectNamedPipe failed with %d\n", GetLastError()
-					);
-					CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
-					devContext->PipeServerAttributes.PidPipeHandle = NULL;
-					continue;
-				}
-
 				TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
 					"Old FFB client lost. Changing client...\n");
 
+				//if (!DisconnectNamedPipe(devContext->PipeServerAttributes.PidPipeHandle))
+				//{
+
+				//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+				//		"DisconnectNamedPipe failed with %d\n", GetLastError()
+				//	);
+				//CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
+			 //   devContext->PipeServerAttributes.PidPipeHandle = NULL;
+
+
+				// The newly connected client candidate is now the actual client.
 				CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
 			    devContext->PipeServerAttributes.PidPipeHandle = hPipe;
 			}
+			// PeekNamedPipe not faling, means that there is a working connection with a client,
+			// that should not be interrupted.
 			else
 			{
 				continue;
 			}
 		}
+		// If there was no client before, our candidate is promoted to actual client.
 		else
 		{
 			devContext->PipeServerAttributes.PidPipeHandle = hPipe;
@@ -403,9 +415,17 @@ WriteResponseToPidClient(
 		if (!DisconnectNamedPipe(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle))
 		{
 
-			TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-				"DisconnectNamedPipe failed with %d\n", GetLastError()
+			TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
+				"FFB client disconnected from %ws\n",
+				(LPCWSTR)queueContext->DeviceContext->PipeServerAttributes.PidPipePathName
 			);
+
+			if (GetLastError() != ERROR_PIPE_NOT_CONNECTED)
+			{
+				TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
+					"DisconnectNamedPipe failed with %d\n", GetLastError()
+				);
+			}
 			CloseHandle(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle);
 			queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle = NULL;
 			return;
