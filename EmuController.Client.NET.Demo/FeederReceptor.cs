@@ -1,4 +1,5 @@
-﻿using EmuController.Client.NET.PID;
+﻿using EmuController.Client.NET.Input;
+using EmuController.Client.NET.PID;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -76,10 +77,10 @@ namespace EmuController.Client.NET.Demo
                 // Supports 4 dpads that have 8 directions. >0x07 = NULL, 0 = top, 
                 // incrementing value will advance the dpad position 45 degrees clockwise;
                 // Perhaps some enum needs to be defined for more readability.
-                EmuClient.InputState.DPads.SetDPad(0, (byte)rndVal.Next(0, 8));
-                EmuClient.InputState.DPads.SetDPad(1, (byte)rndVal.Next(0, 8));
-                EmuClient.InputState.DPads.SetDPad(2, (byte)rndVal.Next(0, 8));
-                EmuClient.InputState.DPads.SetDPad(3, (byte)rndVal.Next(0, 8));
+                EmuClient.InputState.DPads.SetDPad(0, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                EmuClient.InputState.DPads.SetDPad(1, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                EmuClient.InputState.DPads.SetDPad(2, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                EmuClient.InputState.DPads.SetDPad(3, (DPadDirectionEnum)rndVal.Next(-1, 7));
 
                 // There are two ways to update EmuController.
                 // First one sends the whole input report.

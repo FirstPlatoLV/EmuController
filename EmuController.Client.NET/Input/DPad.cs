@@ -27,14 +27,27 @@ namespace EmuController.Client.NET.Input
             DPads = Enumerable.Repeat((byte)0xFF, 4).ToArray();
         }
 
-        public void SetDPad(int index, byte value)
+        public void SetDPad(int index, DPadDirectionEnum value)
         {
             if (index > 3)
             {
                 throw new IndexOutOfRangeException();
             }
             ArrayMap.Set(index, true);
-            DPads[index] = value;
+            DPads[index] = (byte)value;
         }
+    }
+
+    public enum DPadDirectionEnum
+    {
+        None = -1,
+        Up = 0,
+        UpRight = 1,
+        Right = 2,
+        RightDown = 3,
+        Down = 4,
+        DownLeft = 5,
+        Left = 6,
+        LeftUp = 7
     }
 }
