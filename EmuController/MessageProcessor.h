@@ -29,7 +29,7 @@ DeserializeJoyInput(
 
 
 //
-// Sets the joystick inptu report to default values.
+// Sets the joystick input report to default values.
 //
 VOID
 SetDefaultControllerState(

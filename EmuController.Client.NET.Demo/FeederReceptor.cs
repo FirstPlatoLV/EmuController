@@ -1,10 +1,7 @@
 ﻿using EmuController.Client.NET.Input;
 using EmuController.Client.NET.PID;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Demo
 {
@@ -49,14 +46,14 @@ namespace EmuController.Client.NET.Demo
         public void Feed()
         {
 
-            //// Just a randomizer to provide random values to simulate input;
+            // Just a randomizer to provide random values to simulate input;
             Random rndVal = new Random();
 
             while (EmuClient.InputClientConnected)
             {
 
-                // Provide axistype and value, to set it's state. When AxisEnum is cast as integer, the values correspond to DirectInput axis gamepad values.
-                // This is useful, for example, when you want to directly bind from Axis array returned from DirectInput to Emucontroller, by specifying indices for both, like this:
+                // Provide axistype and value to set it's state. When AxisEnum is cast as integer, the values correspond to DirectInput axis gamepad values.
+                // This is useful, when you want to directly bind from Axis array returned by DirectInput to Emucontroller, specifying indices for both, or example:
                 // DirectInput Device Axis Array[i].value to EmuController Axes.SetAxis((AxisEnum)i, value);
 
                 EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisX, (ushort)rndVal.Next(0, 65535));
@@ -68,7 +65,7 @@ namespace EmuController.Client.NET.Demo
                 EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisSlider, (ushort)rndVal.Next(0, 65535));
                 EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisDial, (ushort)rndVal.Next(0, 65535));
 
-                //// Supports 128 buttons that fit in 16 bytes, just like vJoy.
+                //// Supports 128 buttons that fit in 16 bytes.
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), true);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), false);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), true);
@@ -78,7 +75,7 @@ namespace EmuController.Client.NET.Demo
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), true);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), false);
 
-                // Supports 4 dpads that have 8 directions. >0x07 = NULL, 0 = North, 
+                // Supports 4 dpads that have 8 directions. -1 = Null, 0 = North, 
                 // incrementing value will advance the dpad position 45 degrees clockwise;
                 EmuClient.InputState.DPads.SetDPad(0, (DPadDirectionEnum)rndVal.Next(-1, 7));
                 EmuClient.InputState.DPads.SetDPad(1, (DPadDirectionEnum)rndVal.Next(-1, 7));
@@ -102,6 +99,7 @@ namespace EmuController.Client.NET.Demo
 
         private static void FFBDataReceived(object sender, FFBDataReceivedEventArgs e)
         {
+            // Outputs packet type that EmuController received.
             Console.WriteLine(e.ReportId.ToString());
         }
     }

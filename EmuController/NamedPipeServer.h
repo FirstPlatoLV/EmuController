@@ -12,7 +12,6 @@ CreateNamedPipeServer(
 	LPVOID Params
 );
 
-
 DWORD WINAPI 
 InputPipeServerThread(
 	LPVOID Params);
