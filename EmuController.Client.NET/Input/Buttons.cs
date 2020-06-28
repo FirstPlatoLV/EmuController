@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Input
 {
-    public class Button
+    public class Buttons
     {
         internal readonly UsageId Usage = UsageId.Button;
 
         internal readonly BitArray ArrayMap;
         internal readonly BitArray ButtonArray;
 
-        internal ushort[] Buttons { get; private set; }
+        internal ushort[] ButtonValues { get; private set; }
 
 
-        internal Button()
+        internal Buttons()
         {
             ArrayMap = new BitArray(8);
             ButtonArray = new BitArray(128);
-            Buttons = new ushort[8];
+            ButtonValues = new ushort[8];
         }
 
 
@@ -49,7 +49,7 @@ namespace EmuController.Client.NET.Input
         {
             byte[] temp = new byte[16];
             ButtonArray.CopyTo(temp, 0);
-            Buffer.BlockCopy(temp, 0, Buttons, 0, temp.Length);
+            Buffer.BlockCopy(temp, 0, ButtonValues, 0, temp.Length);
 
         }
     }

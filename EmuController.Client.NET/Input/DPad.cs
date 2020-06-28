@@ -15,12 +15,6 @@ namespace EmuController.Client.NET.Input
 
         internal byte[] DPads { get; private set; }
 
-        public byte DPad1 { get { return DPads[0]; } set { DPads[0] = value; ArrayMap.Set(0, true); } }
-        public byte DPad2 { get { return DPads[1]; } set { DPads[1] = value; ArrayMap.Set(1, true); } }
-        public byte DPad3 { get { return DPads[2]; } set { DPads[2] = value; ArrayMap.Set(2, true); } }
-        public byte DPad4 { get { return DPads[3]; } set { DPads[3] = value; ArrayMap.Set(3, true); } }
-
-
         internal DPad()
         {
             ArrayMap = new BitArray(8);
@@ -38,6 +32,9 @@ namespace EmuController.Client.NET.Input
         }
     }
 
+    /// <summary>
+    /// DPad directions expressed as Cardinal directions 
+    /// </summary>
     public enum DPadDirectionEnum
     {
         None = -1,

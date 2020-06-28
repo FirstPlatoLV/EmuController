@@ -20,7 +20,7 @@ namespace EmuController.Client.NET.Input
         /// <summary>
         /// Stores values for axis type controls.
         /// </summary>
-        public Axis Axes { get; private set; }
+        public Axes Axes { get; private set; }
         
         /// <summary>
         /// Stores values for dpad type controls.
@@ -30,40 +30,7 @@ namespace EmuController.Client.NET.Input
         /// <summary>
         /// Stores values for button type controls.
         /// </summary>
-        public Button Buttons { get; private set; }
-
-        /// <summary>
-        /// AxisX value
-        /// </summary>
-        public ushort AxisX { get { return Axes.AxisX; } set { Axes.AxisX = value; } }
-        /// <summary>
-        /// AxisY value
-        /// </summary>
-        public ushort AxisY { get { return Axes.AxisY; } set { Axes.AxisY = value; } }
-        /// <summary>
-        /// AxisZ value
-        /// </summary>
-        public ushort AxisZ { get { return Axes.AxisZ; } set { Axes.AxisZ = value; } }
-        /// <summary>
-        /// AxisRx value
-        /// </summary>
-        public ushort AxisRx { get { return Axes.AxisRx; } set { Axes.AxisRx = value; } }
-        /// <summary>
-        /// AxisRy value
-        /// </summary>
-        public ushort AxisRy { get { return Axes.AxisRy; } set { Axes.AxisRy = value; } }
-        /// <summary>
-        /// AxisRz value
-        /// </summary>
-        public ushort AxisRz { get { return Axes.AxisRz; } set { Axes.AxisRz = value; } }
-        /// <summary>
-        /// AxisSlider value
-        /// </summary>
-        public ushort AxisSlider { get { return Axes.AxisSlider; } set { Axes.AxisSlider = value; } }
-        /// <summary>
-        /// AxisDial value
-        /// </summary>
-        public ushort AxisDial { get { return Axes.AxisDial; } set { Axes.AxisDial = value; } }
+        public Buttons Buttons { get; private set; }
 
         internal EmuInputState()
         {
@@ -72,8 +39,8 @@ namespace EmuController.Client.NET.Input
 
         internal void CreateDefaultState()
         {
-            Axes = new Axis();
-            Buttons = new Button();
+            Axes = new Axes();
+            Buttons = new Buttons();
             DPads = new DPad();
         }
 
@@ -107,7 +74,7 @@ namespace EmuController.Client.NET.Input
                     {
                         if (Axes.ArrayMap.Get(i))
                         {
-                            writer.Write(Axes.Axes[i]);
+                            writer.Write(Axes.AxisValues[i]);
                         }
                     }
                 }
@@ -124,7 +91,7 @@ namespace EmuController.Client.NET.Input
                     {
                         if (Buttons.ArrayMap.Get(i))
                         {
-                            writer.Write(Buttons.Buttons[i]);
+                            writer.Write(Buttons.ButtonValues[i]);
                         }
                     }
                 }
@@ -188,9 +155,9 @@ namespace EmuController.Client.NET.Input
 
                 Buttons.GetButtons();
 
-                for (int i = 0; i < Buttons.Buttons.Length; i++)
+                for (int i = 0; i < Buttons.ButtonValues.Length; i++)
                 {
-                    writer.Write(Buttons.Buttons[i]);
+                    writer.Write(Buttons.ButtonValues[i]);
                 }
 
                 for (int i = 0; i < DPads.DPads.Length; i++)
@@ -198,9 +165,9 @@ namespace EmuController.Client.NET.Input
                     writer.Write(DPads.DPads[i]);
                 }
 
-                for (int i = 0; i < Axes.Axes.Length; i++)
+                for (int i = 0; i < Axes.AxisValues.Length; i++)
                 {
-                    writer.Write(Axes.Axes[i]);
+                    writer.Write(Axes.AxisValues[i]);
                 }
             }
 

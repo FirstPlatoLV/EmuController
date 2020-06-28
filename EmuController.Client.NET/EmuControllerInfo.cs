@@ -30,13 +30,23 @@ namespace EmuController.Client.NET
 
             string[] hwid = (string[])queryObj.Properties[nameof(HardwareId)].Value;
 
+
+
             // We need only the Vīd/Pid information about the device
             string prefix = "ROOT\\";
-            HardwareId = hwid[0].Substring(prefix.Length);
+
+            if (hwid != null)
+            {
+                HardwareId = hwid[0].Substring(prefix.Length);
+            }
+            else
+            {
+                // In case user installed the device manually through device manager (which should not be done), the hardwareId will be incorrect,
+                // So we replace it with predefined one. 
+                HardwareId = "VID_DEED&PID_FE00";
+            }
 
             Name = GetDeviceFriendlyName(HardwareId);
-
-            //Name = queryObj.Properties[nameof(Name)].Value.ToString();
         }
 
         private string GetDeviceFriendlyName(string hwId)

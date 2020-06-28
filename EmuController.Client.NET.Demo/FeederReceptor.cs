@@ -22,6 +22,11 @@ namespace EmuController.Client.NET.Demo
 
         public void Connect()
         {
+            if (EmuClient.EmuControllerDevices.Count == 0)
+            {
+                Console.WriteLine("No EmuController devices detected");
+                return;
+            }
             // Connect to EmuController device to send input reports.
             EmuClient.ConnectInputClient(EmuClient.EmuControllerDevices[0]);
 
@@ -50,14 +55,9 @@ namespace EmuController.Client.NET.Demo
             while (EmuClient.InputClientConnected)
             {
 
-                // There are two ways to set values for axes. One is explicit way refering to Axis name. Like this:
-                //EmuClient.InputState.AxisZ = 5353;  // Center value is 32768 which will correspond to Raw value of 32767;
-
-
-                // The other way to set axes value by providing axis index and value, where index corresponds to DirectInput axis index.
-                // This is useful in the following scenario: if binding profiles for your feeder store the source axis index and destination axis index,
-                // it's convenient to update the values, because you can just do something like:
-                // DirectInput Device Axis Array[i].value to EmuController Axes.SetAxis(j, value);
+                // Provide axistype and value, to set it's state. When AxisEnum is cast as integer, the values correspond to DirectInput axis gamepad values.
+                // This is useful, for example, when you want to directly bind from Axis array returned from DirectInput to Emucontroller, by specifying indices for both, like this:
+                // DirectInput Device Axis Array[i].value to EmuController Axes.SetAxis((AxisEnum)i, value);
 
                 EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisX, (ushort)rndVal.Next(0, 65535));
                 EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
@@ -78,9 +78,8 @@ namespace EmuController.Client.NET.Demo
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), true);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), false);
 
-                // Supports 4 dpads that have 8 directions. >0x07 = NULL, 0 = top, 
+                // Supports 4 dpads that have 8 directions. >0x07 = NULL, 0 = North, 
                 // incrementing value will advance the dpad position 45 degrees clockwise;
-                // Perhaps some enum needs to be defined for more readability.
                 EmuClient.InputState.DPads.SetDPad(0, (DPadDirectionEnum)rndVal.Next(-1, 7));
                 EmuClient.InputState.DPads.SetDPad(1, (DPadDirectionEnum)rndVal.Next(-1, 7));
                 EmuClient.InputState.DPads.SetDPad(2, (DPadDirectionEnum)rndVal.Next(-1, 7));
@@ -96,7 +95,6 @@ namespace EmuController.Client.NET.Demo
                 // Any control that has not been updated will retain the previous value that was sent
                 // to Emucontroller device.
                 EmuClient.SendUpdate();
-
                 Thread.Sleep(1000);
 
             }
