@@ -80,7 +80,7 @@ typedef struct _MESSAGE_HEADER
 typedef struct _JOYSTICK_INPUT_REPORT
 {
 	UCHAR  ReportId;	// Report ID = 0x01
-	USHORT Buttons[8];	// Each 16-bit value represents a set of states of 16 buttons 
+	USHORT Buttons[8];	// Each 16-bit value represents a set of states for 16 buttons 
 	// (Bit set = Button Down)
 
 	UCHAR  HatSwitches[4];	// 8 possible states for each DPad, 

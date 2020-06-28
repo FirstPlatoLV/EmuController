@@ -48,6 +48,9 @@ namespace EmuController.Client.NET
         private NamedPipeClientStream FFBPipeClient;
 
 
+        /// <summary>
+        /// Exposes InputClient connection state
+        /// </summary>
         public bool InputClientConnected
         {
             get
@@ -63,6 +66,9 @@ namespace EmuController.Client.NET
             }
         }
 
+        /// <summary>
+        /// Exposes FFBClient connection state
+        /// </summary>
         public bool FFBClientConnected
         {
             get
@@ -229,7 +235,6 @@ namespace EmuController.Client.NET
                 FFBPipeClient.Dispose();
                 TaskCancelToken.Dispose();
                 ManagementObjectSearcher.Dispose();
-
             }
         }
 

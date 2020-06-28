@@ -9,20 +9,22 @@ namespace EmuController.Client.NET
     {
         public static string GetStringFromRegistry(string regPath, string regKeyName)
         {
+            string res = string.Empty;
             try
             {
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(regPath);
                 if (key != null)
                 {
-                    return (string)key.GetValue(regKeyName);
+                    res = (string)key.GetValue(regKeyName);
                 }
             }
-            finally
+            catch
             {
-
+                // If GetValue() fails we just don't want to make a fuss about it,
+                // since having no device friendly name does not really affect functionality of our freeder.
             }
 
-            return string.Empty;
+            return res;
         }
     }
 }

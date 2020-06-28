@@ -59,20 +59,24 @@ namespace EmuController.Client.NET.Demo
                 // it's convenient to update the values, because you can just do something like:
                 // DirectInput Device Axis Array[i].value to EmuController Axes.SetAxis(j, value);
 
-                EmuClient.InputState.Axes.SetAxis(0, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(1, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(2, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(3, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(4, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(5, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(6, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetAxis(7, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisX, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisZ, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisRx, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisRy, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisRz, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisSlider, (ushort)rndVal.Next(0, 65535));
+                EmuClient.InputState.Axes.SetAxis(AxisEnum.AxisDial, (ushort)rndVal.Next(0, 65535));
 
                 //// Supports 128 buttons that fit in 16 bytes, just like vJoy.
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), true);
+                EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), false);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), true);
                 EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), false);
-                EmuClient.InputState.Buttons.SetButton(rndVal.Next(0, 31), false);
+                EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), true);
+                EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), false);
+                EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), true);
+                EmuClient.InputState.Buttons.SetButton(rndVal.Next(32, 127), false);
 
                 // Supports 4 dpads that have 8 directions. >0x07 = NULL, 0 = top, 
                 // incrementing value will advance the dpad position 45 degrees clockwise;

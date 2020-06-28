@@ -25,8 +25,17 @@ namespace EmuController.Client.NET.Input
         }
 
 
+        /// <summary>
+        /// Set state for button with specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
         public void SetButton(int index, bool value)
         {
+            if (index < -0 || index > 127)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
             int arrayMapIndex = (index / 16);
             if (arrayMapIndex < 0)
             {

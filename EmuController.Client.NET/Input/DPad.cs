@@ -41,13 +41,13 @@ namespace EmuController.Client.NET.Input
     public enum DPadDirectionEnum
     {
         None = -1,
-        Up = 0,
-        UpRight = 1,
-        Right = 2,
-        RightDown = 3,
-        Down = 4,
-        DownLeft = 5,
-        Left = 6,
-        LeftUp = 7
+        North = 0,
+        NorthEast = 1,
+        East = 2,
+        SouthEast = 3,
+        South = 4,
+        SouthWest = 5,
+        West = 6,
+        NorthWest = 7
     }
 }

@@ -36,10 +36,30 @@ namespace EmuController.Client.NET.Input
             ArrayMap = new BitArray(8);
         }
 
-        public void SetAxis(int index, ushort value)
+        /// <summary>
+        /// Set value for Axis with index specified.
+        /// </summary>
+        /// <param name="axisType">Axis type</param>
+        /// <param name="value">Axis value</param>
+        public void SetAxis(AxisEnum axisType, ushort value)
         {
-            ArrayMap.Set(index, true);
-            Axes[index] = value;
+            ArrayMap.Set((int)axisType, true);
+            Axes[(int)axisType] = value;
         }
+    }
+
+    /// <summary>
+    /// Axis types for HID game controllers.
+    /// </summary>
+    public enum AxisEnum
+    {
+        AxisX,
+        AxisY,
+        AxisZ,
+        AxisRx,
+        AxisRy,
+        AxisRz,
+        AxisSlider,
+        AxisDial
     }
 }
