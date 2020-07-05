@@ -22,16 +22,11 @@ namespace EmuController.Client.NET.PID
 { 
     public class PIDDeviceControlReport : FFBPacket
     {
-        public DeviceControlEnum ControlCommand { get; }
+        public DeviceControlEnum ControlCommand { get; private set; }
 
-        public PIDDeviceControlReport(byte[] packet)
+        public PIDDeviceControlReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            ControlCommand = (DeviceControlEnum)packet[1];
         }
         public enum DeviceControlEnum
         {
@@ -41,6 +36,11 @@ namespace EmuController.Client.NET.PID
             Reset = 4,
             Pause = 5,
             Continue = 6
+        }
+
+        protected override void Deserialize()
+        {
+            ControlCommand = (DeviceControlEnum)DataPacket[1];
         }
     }
 }

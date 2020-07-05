@@ -22,31 +22,31 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetConditionReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public ConditionParamBlockEnum ParameterBlockOffset { get; }
-        public short CenterPointOffset { get; }
-        public short NegativeCoefficient { get; }
-        public short PositiveCoefficient { get; }
-        public ushort NegativeSaturation { get; }
-        public ushort PositiveSaturation { get; }
-        public ushort DeadBand { get; }
-        public PIDSetConditionReport(byte[] packet)
+        public byte EffectBlockIndex { get; private set; }
+        public ConditionParamBlockEnum ParameterBlockOffset { get; private set; }
+        public short CenterPointOffset { get; private set; }
+        public short NegativeCoefficient { get; private set; }
+        public short PositiveCoefficient { get; private set; }
+        public ushort NegativeSaturation { get; private set; }
+        public ushort PositiveSaturation { get; private set; }
+        public ushort DeadBand { get; private set; }
+
+        public PIDSetConditionReport(byte[] packet): base(packet)
         {
 
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
+        }
 
-            EffectBlockIndex = packet[1];
-            ParameterBlockOffset = (ConditionParamBlockEnum)(packet[2] & 0x0F);
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            ParameterBlockOffset = (ConditionParamBlockEnum)(DataPacket[2] & 0x0F);
 
-            CenterPointOffset = BitConverter.ToInt16(packet, 3);
-            NegativeCoefficient = BitConverter.ToInt16(packet, 5);
-            PositiveCoefficient = BitConverter.ToInt16(packet, 7);
-            NegativeSaturation = BitConverter.ToUInt16(packet, 9);
-            PositiveSaturation = BitConverter.ToUInt16(packet, 11);
-            DeadBand = BitConverter.ToUInt16(packet, 13);
+            CenterPointOffset = BitConverter.ToInt16(DataPacket, 3);
+            NegativeCoefficient = BitConverter.ToInt16(DataPacket, 5);
+            PositiveCoefficient = BitConverter.ToInt16(DataPacket, 7);
+            NegativeSaturation = BitConverter.ToUInt16(DataPacket, 9);
+            PositiveSaturation = BitConverter.ToUInt16(DataPacket, 11);
+            DeadBand = BitConverter.ToUInt16(DataPacket, 13);
         }
     }
     public enum ConditionParamBlockEnum

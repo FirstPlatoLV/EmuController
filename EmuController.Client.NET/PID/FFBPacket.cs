@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,6 +23,16 @@ namespace EmuController.Client.NET.PID
 {
     public abstract class FFBPacket
     {
+        public PIDReportIdEnum ReportId { get => (PIDReportIdEnum)DataPacket[0]; }
+        
+        protected byte[] DataPacket;
 
+        public FFBPacket(byte[] packet)
+        {
+            DataPacket = packet;
+            Deserialize();
+        }
+
+        protected abstract void Deserialize();
     }
 }

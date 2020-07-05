@@ -22,15 +22,15 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDBlockFreeReport : FFBPacket
     {
-        public byte FreeReportEffectBlockIndex { get; }
-        public PIDBlockFreeReport(byte[] packet)
+        public byte FreeReportEffectBlockIndex { get; private set; }
+        public PIDBlockFreeReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            FreeReportEffectBlockIndex = packet[1];
+        }
+
+        protected override void Deserialize()
+        {
+            FreeReportEffectBlockIndex = DataPacket[1];
         }
     }
 }

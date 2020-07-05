@@ -22,20 +22,20 @@ namespace EmuController.Client.NET.PID
 { 
     public class PIDSetRampReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public short RampStart { get; }
-        public short RampEnd { get; }
+        public byte EffectBlockIndex { get; private set; }
+        public short RampStart { get; private set; }
+        public short RampEnd { get; private set; }
 
-        public PIDSetRampReport(byte[] packet)
+        public PIDSetRampReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
+           
+        }
 
-            EffectBlockIndex = packet[1];
-            RampStart = BitConverter.ToInt16(packet, 2);
-            RampEnd = BitConverter.ToInt16(packet, 4);
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            RampStart = BitConverter.ToInt16(DataPacket, 2);
+            RampEnd = BitConverter.ToInt16(DataPacket, 4);
         }
     }
 }

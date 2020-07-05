@@ -34,7 +34,7 @@ namespace EmuController.Client.NET
             catch
             {
                 // If GetValue() fails we just don't want to make a fuss about it,
-                // since having no device friendly name does not really affect functionality of our freeder.
+                // since having no device friendly name does not really affect functionality of our feeder.
             }
 
             return res;

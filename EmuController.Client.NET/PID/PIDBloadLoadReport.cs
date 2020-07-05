@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,17 +23,16 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDBloadLoadReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        
-        public PIDBloadLoadReport(byte[] packet)
+        public byte EffectBlockIndex { get; private set; }
+    
+        public PIDBloadLoadReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            EffectBlockIndex = packet[1];
+        }
 
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
         }
     }
 }

@@ -22,17 +22,17 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDDownloadSampleReport : FFBPacket
     {
-        public sbyte DownloadForceSampleX { get; }
-        public sbyte DownloadForceSampleY { get; }
-        public PIDDownloadSampleReport(byte[] packet)
+        public sbyte DownloadForceSampleX { get; private set; }
+        public sbyte DownloadForceSampleY { get; private set; }
+        public PIDDownloadSampleReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            DownloadForceSampleX = (sbyte)packet[1];
-            DownloadForceSampleY = (sbyte)packet[2];
+        }
+
+        protected override void Deserialize()
+        {
+            DownloadForceSampleX = (sbyte)DataPacket[1];
+            DownloadForceSampleY = (sbyte)DataPacket[2];
         }
     }
 }

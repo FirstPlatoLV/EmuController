@@ -21,23 +21,23 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetPeriodicReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public ushort Magnitude { get; }
-        public short Offset { get; }
-        public ushort Phase { get; }
-        public ushort Period { get; }
-        public PIDSetPeriodicReport(byte[] packet)
+        public byte EffectBlockIndex { get; private set; }
+        public ushort Magnitude { get; private set; }
+        public short Offset { get; private set; }
+        public ushort Phase { get; private set; }
+        public ushort Period { get; private set; }
+        public PIDSetPeriodicReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            EffectBlockIndex = packet[1];
-            Magnitude = BitConverter.ToUInt16(packet, 2);
-            Offset = BitConverter.ToInt16(packet, 4);
-            Phase = BitConverter.ToUInt16(packet, 6);
-            Period = BitConverter.ToUInt16(packet, 8);
+        }
+
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            Magnitude = BitConverter.ToUInt16(DataPacket, 2);
+            Offset = BitConverter.ToInt16(DataPacket, 4);
+            Phase = BitConverter.ToUInt16(DataPacket, 6);
+            Period = BitConverter.ToUInt16(DataPacket, 8);
         }
     }
 }

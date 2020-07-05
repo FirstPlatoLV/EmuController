@@ -22,23 +22,22 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDEffectOperationReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public EffectOpEnum EffectOperation { get; }
-        public byte LoopCount { get; }
+        public byte EffectBlockIndex { get; private set; }
+        public EffectOpEnum EffectOperation { get; private set; }
+        public byte LoopCount { get; private set; }
 
      
-        public PIDEffectOperationReport(byte[] packet)
+        public PIDEffectOperationReport(byte[] packet): base(packet)
         {
 
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
+        }
 
-            EffectBlockIndex = packet[1];
-            EffectOperation = (EffectOpEnum)packet[2];
-            LoopCount = packet[3];
-        }    
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            EffectOperation = (EffectOpEnum)DataPacket[2];
+            LoopCount = DataPacket[3];
+        }
     }
     public enum EffectOpEnum
     {

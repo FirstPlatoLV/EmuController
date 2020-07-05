@@ -22,19 +22,19 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetConstantForce : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public short Magnitude { get; }
+        public byte EffectBlockIndex { get; private set; }
+        public short Magnitude { get; private set; }
 
-        public PIDSetConstantForce(byte[] packet)
+        public PIDSetConstantForce(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            EffectBlockIndex = packet[1];
-            Magnitude = BitConverter.ToInt16(packet, 2);
+
         }
 
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            Magnitude = BitConverter.ToInt16(DataPacket, 2);
+        }
     }
 }

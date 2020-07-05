@@ -22,19 +22,19 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetCustomForceReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
-        public byte SampleCount { get; }
-        public ushort SamplePeriod { get; }
-        public PIDSetCustomForceReport(byte[] packet)
+        public byte EffectBlockIndex { get; private set; }
+        public byte SampleCount { get; private set; }
+        public ushort SamplePeriod { get; private set; }
+        public PIDSetCustomForceReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            EffectBlockIndex = packet[1];
-            SampleCount = packet[2];
-            SamplePeriod = BitConverter.ToUInt16(packet, 3);
+        }
+
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            SampleCount = DataPacket[2];
+            SamplePeriod = BitConverter.ToUInt16(DataPacket, 3);
         }
     }
 }

@@ -25,19 +25,19 @@ namespace EmuController.Client.NET.PID
         private const int DataLength = 12;
         public byte EffectBlockIndex { get; private set; }
         public ushort DataOffset { get; private set; }
-        public ReadOnlyCollection<byte> Data { get; }
-        public PIDSetCustomForceDataReport(byte[] packet)
+        public ReadOnlyCollection<byte> Data { get; private set; }
+        public PIDSetCustomForceDataReport(byte[] packet): base(packet)
         {
 
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
+        }
+
+        protected override void Deserialize()
+        {
             byte[] temp = new byte[DataLength];
 
-            EffectBlockIndex = packet[1];
-            DataOffset = BitConverter.ToUInt16(packet, 2);
-            Array.Copy(packet, 4, temp, 0, DataLength);
+            EffectBlockIndex = DataPacket[1];
+            DataOffset = BitConverter.ToUInt16(DataPacket, 2);
+            Array.Copy(DataPacket, 4, temp, 0, DataLength);
             Data = new ReadOnlyCollection<byte>(temp);
         }
     }

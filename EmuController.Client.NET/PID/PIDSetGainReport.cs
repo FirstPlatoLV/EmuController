@@ -21,15 +21,15 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetGainReport : FFBPacket
     {
-        public ushort Gain { get; }
-        public PIDSetGainReport(byte[] packet)
+        public ushort Gain { get; private set; }
+        public PIDSetGainReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            Gain = BitConverter.ToUInt16(packet, 1);
+        }
+
+        protected override void Deserialize()
+        {
+            Gain = BitConverter.ToUInt16(DataPacket, 1);
         }
     }
 }

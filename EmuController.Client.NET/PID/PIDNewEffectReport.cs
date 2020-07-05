@@ -22,17 +22,17 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDNewEffectReport : FFBPacket
     {
-        public PIDEffectTypeEnum EffectType { get; }
-        public byte ByteCount { get; }
-        public PIDNewEffectReport(byte[] packet)
+        public PIDEffectTypeEnum EffectType { get; private set; }
+        public byte ByteCount { get; private set; }
+        public PIDNewEffectReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
+           
+        }
 
-            EffectType = (PIDEffectTypeEnum)packet[1];
-            ByteCount = packet[2];
+        protected override void Deserialize()
+        {
+            EffectType = (PIDEffectTypeEnum)DataPacket[1];
+            ByteCount = DataPacket[2];
         }
     }
 }

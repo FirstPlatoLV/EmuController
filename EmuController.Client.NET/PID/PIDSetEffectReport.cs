@@ -21,39 +21,39 @@ namespace EmuController.Client.NET.PID
 {
     public class PIDSetEffectReport : FFBPacket
     {
-        public byte EffectBlockIndex { get; }
+        public byte EffectBlockIndex { get; private set; }
 
-        public PIDEffectTypeEnum EffectType { get; }
-        public ushort Duration { get;  }
-        public ushort TriggerRepeatInterval { get; }
-        public ushort SamplePeriod { get;  }
-        public ushort Gain { get; }
-        public byte TriggerButton { get; }
+        public PIDEffectTypeEnum EffectType { get; private set; }
+        public ushort Duration { get; private set;  }
+        public ushort TriggerRepeatInterval { get; private set; }
+        public ushort SamplePeriod { get; private set;  }
+        public ushort Gain { get; private set; }
+        public byte TriggerButton { get; private set; }
 
-        public AxesDirFlags EnableAxesDirFlags { get; }
-        public ushort DirectionX { get; }
-        public ushort DirectionY { get; }
-        public ushort StartDelay { get; }
+        public AxesDirFlags EnableAxesDirFlags { get; private set; }
+        public ushort DirectionX { get; private set; }
+        public ushort DirectionY { get; private set; }
+        public ushort StartDelay { get; private set; }
 
 
-        public PIDSetEffectReport(byte[] packet)
+        public PIDSetEffectReport(byte[] packet): base(packet)
         {
-            if (packet == null)
-            {
-                throw new ArgumentNullException(nameof(packet));
-            }
 
-            EffectBlockIndex = packet[1];
-            EffectType = (PIDEffectTypeEnum)packet[2];
-            Duration = BitConverter.ToUInt16(packet, 3);
-            TriggerRepeatInterval = BitConverter.ToUInt16(packet, 5);
-            SamplePeriod = BitConverter.ToUInt16(packet, 7);
-            Gain = BitConverter.ToUInt16(packet, 9);
-            TriggerButton = packet[11];
-            EnableAxesDirFlags = (AxesDirFlags)packet[12];
-            DirectionX = BitConverter.ToUInt16(packet, 13);
-            DirectionY = BitConverter.ToUInt16(packet, 15);
-            StartDelay = BitConverter.ToUInt16(packet, 17);
+        }
+
+        protected override void Deserialize()
+        {
+            EffectBlockIndex = DataPacket[1];
+            EffectType = (PIDEffectTypeEnum)DataPacket[2];
+            Duration = BitConverter.ToUInt16(DataPacket, 3);
+            TriggerRepeatInterval = BitConverter.ToUInt16(DataPacket, 5);
+            SamplePeriod = BitConverter.ToUInt16(DataPacket, 7);
+            Gain = BitConverter.ToUInt16(DataPacket, 9);
+            TriggerButton = DataPacket[11];
+            EnableAxesDirFlags = (AxesDirFlags)DataPacket[12];
+            DirectionX = BitConverter.ToUInt16(DataPacket, 13);
+            DirectionY = BitConverter.ToUInt16(DataPacket, 15);
+            StartDelay = BitConverter.ToUInt16(DataPacket, 17);
         }
     }
 
