@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,11 +34,14 @@ namespace EmuController.Client.NET.PID
 
         protected override void Deserialize()
         {
+
+            ReadOnlySpan<ushort> packetSpan = MemoryMarshal.Cast<byte, ushort>(DataPacket);
+
             EffectBlockIndex = DataPacket[1];
-            AttackLevel = BitConverter.ToUInt16(DataPacket, 2);
-            FadeLevel = BitConverter.ToUInt16(DataPacket, 4);
-            AttackTime = BitConverter.ToUInt16(DataPacket, 6);
-            FadeTime = BitConverter.ToUInt16(DataPacket, 8);
+            AttackLevel = packetSpan[1];
+            FadeLevel = packetSpan[2];
+            AttackTime = packetSpan[3];
+            FadeTime = packetSpan[4];
         }
     }
 }

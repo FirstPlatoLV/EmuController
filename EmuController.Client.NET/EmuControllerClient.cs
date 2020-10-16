@@ -17,10 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Management;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Resources;
 
 namespace EmuController.Client.NET
 {
@@ -30,8 +28,8 @@ namespace EmuController.Client.NET
         private readonly Guid EmuControllerClassGuid = Guid.Parse("4DB9B76D-4379-437E-9457-4F00B3090C1F");
 
         /// <summary>
-        /// The event that is signaled once FFB data is sent from application to EmuController device.
-        /// The event FFBPacket property contains the data.
+        /// The event that is signaled once FFB data is sent from application (game) to EmuController device.
+        /// The FFBPacket property contains the data.
         /// </summary>
         public event EventHandler<FFBDataReceivedEventArgs> FFBDataReceived;
 
@@ -55,7 +53,7 @@ namespace EmuController.Client.NET
         /// List of detected active EmuController devices.
         /// To establish connection with EmuController device, one of EmuControllerInfo objects must be passed as parameter.
         /// </summary>
-        public List<EmuControllerInfo> EmuControllerDevices { get; private set; }
+        public IList<EmuControllerInfo> EmuControllerDevices { get; private set; }
 
         private NamedPipeClientStream InputPipeClient;
         private NamedPipeClientStream FFBPipeClient;
@@ -110,6 +108,11 @@ namespace EmuController.Client.NET
         {
             InputState = new EmuInputState();
             GetEmuControllers();
+        }
+
+        ~EmuControllerClient()
+        {
+            Dispose();
         }
 
 
@@ -208,12 +211,17 @@ namespace EmuController.Client.NET
 
         /// <summary>
         /// Disconnects input client from the EmuController device.
+        /// Will also disconnect FFBPipeClient if it is connected.
         /// </summary>
         public void CloseInputClient()
         {
-            if (FFBPipeClient.IsConnected)
+            if (InputPipeClient.IsConnected)
             {
-                FFBPipeClient.Close();
+                InputPipeClient.Close();
+                if (FFBPipeClient.IsConnected)
+                {
+                    FFBPipeClient.Close();
+                }
             }
         }
 
@@ -224,6 +232,7 @@ namespace EmuController.Client.NET
         {
             if (FFBPipeClient.IsConnected)
             {
+                TaskCancelToken.Cancel();
                 FFBPipeClient.Close();
             }
         }
@@ -243,7 +252,6 @@ namespace EmuController.Client.NET
             if (disposing)
             {
                 CloseInputClient();
-                CloseFFBClient();
                 InputPipeClient.Dispose();
                 FFBPipeClient.Dispose();
                 TaskCancelToken.Dispose();
@@ -256,7 +264,9 @@ namespace EmuController.Client.NET
 
             string scope = "root\\CIMV2";
             string classGuid = "{" + EmuControllerClassGuid.ToString() + "}";
-            string queryString = $"SELECT * FROM Win32_PnPEntity WHERE ClassGuid = '{classGuid}'";
+         
+
+            string queryString = $"SELECT * FROM Win32_PnPSignedDriver WHERE ClassGuid = '{classGuid}'";
             ManagementObjectSearcher = new ManagementObjectSearcher(scope, queryString);
             EmuControllerDevices = new List<EmuControllerInfo>();
 

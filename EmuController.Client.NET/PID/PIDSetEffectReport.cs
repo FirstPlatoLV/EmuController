@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace EmuController.Client.NET.PID
 {
@@ -45,15 +42,20 @@ namespace EmuController.Client.NET.PID
         {
             EffectBlockIndex = DataPacket[1];
             EffectType = (PIDEffectTypeEnum)DataPacket[2];
-            Duration = BitConverter.ToUInt16(DataPacket, 3);
-            TriggerRepeatInterval = BitConverter.ToUInt16(DataPacket, 5);
-            SamplePeriod = BitConverter.ToUInt16(DataPacket, 7);
-            Gain = BitConverter.ToUInt16(DataPacket, 9);
+
+            ReadOnlySpan<byte> packetSpan = DataPacket;
+            ReadOnlySpan<ushort> shortSpan = MemoryMarshal.Cast<byte, ushort>(packetSpan.Slice(3));
+
+
+            Duration = shortSpan[0];
+            TriggerRepeatInterval = shortSpan[1];
+            SamplePeriod = shortSpan[2];
+            Gain = shortSpan[3];
             TriggerButton = DataPacket[11];
             EnableAxesDirFlags = (AxesDirFlags)DataPacket[12];
-            DirectionX = BitConverter.ToUInt16(DataPacket, 13);
-            DirectionY = BitConverter.ToUInt16(DataPacket, 15);
-            StartDelay = BitConverter.ToUInt16(DataPacket, 17);
+            DirectionX = shortSpan[5];
+            DirectionY = shortSpan[6];
+            StartDelay = shortSpan[7];
         }
     }
 

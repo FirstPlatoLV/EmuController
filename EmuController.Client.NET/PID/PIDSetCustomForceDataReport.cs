@@ -25,7 +25,10 @@ namespace EmuController.Client.NET.PID
         private const int DataLength = 12;
         public byte EffectBlockIndex { get; private set; }
         public ushort DataOffset { get; private set; }
-        public ReadOnlyCollection<byte> Data { get; private set; }
+
+        public ReadOnlyCollection<byte> Data => new ReadOnlyCollection<byte>(data);
+        
+        private byte[] data;
         public PIDSetCustomForceDataReport(byte[] packet): base(packet)
         {
 
@@ -33,12 +36,11 @@ namespace EmuController.Client.NET.PID
 
         protected override void Deserialize()
         {
-            byte[] temp = new byte[DataLength];
-
             EffectBlockIndex = DataPacket[1];
             DataOffset = BitConverter.ToUInt16(DataPacket, 2);
-            Array.Copy(DataPacket, 4, temp, 0, DataLength);
-            Data = new ReadOnlyCollection<byte>(temp);
+
+            ReadOnlySpan<byte> packetSpan = DataPacket;
+            data = packetSpan.Slice(4).ToArray();
         }
     }
 }

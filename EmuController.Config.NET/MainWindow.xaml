@@ -1,0 +1,27 @@
+﻿<Window x:Class="EmuController.Config.NET.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmuController.Config.NET"
+        mc:Ignorable="d"
+        Title="EmuController Configuration" Height="420" Width="600">
+    <Grid Margin="0,0,0,26" Height="360">
+        <Label Content="Device #1 Status" HorizontalAlignment="Left" Margin="8,41,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #2 Status" HorizontalAlignment="Left" Margin="8,81,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #3 Status" HorizontalAlignment="Left" Margin="8,121,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #4 Status" HorizontalAlignment="Left" Margin="8,161,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #5 Status" HorizontalAlignment="Left" Margin="8,201,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #6 Status" HorizontalAlignment="Left" Margin="8,241,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #7 Status" HorizontalAlignment="Left" Margin="8,281,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Label Content="Device #8 Status" HorizontalAlignment="Left" Margin="8,321,0,0" VerticalAlignment="Top" Height="30" Width="190"/>
+        <Menu Margin="0,3,0,337" Height="25">
+            <MenuItem Header="Install" HorizontalAlignment="Center"/>
+            <MenuItem Header="Uninstall" HorizontalAlignment="Center"/>
+            <MenuItem Header="Enable" HorizontalAlignment="Center"/>
+            <MenuItem Header="Disable" HorizontalAlignment="Center"/>
+        </Menu>
+        <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="119,41,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="30"/>
+
+    </Grid>
+</Window>

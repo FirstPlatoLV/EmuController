@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,12 +42,14 @@ namespace EmuController.Client.NET.PID
             EffectBlockIndex = DataPacket[1];
             ParameterBlockOffset = (ConditionParamBlockEnum)(DataPacket[2] & 0x0F);
 
-            CenterPointOffset = BitConverter.ToInt16(DataPacket, 3);
-            NegativeCoefficient = BitConverter.ToInt16(DataPacket, 5);
-            PositiveCoefficient = BitConverter.ToInt16(DataPacket, 7);
-            NegativeSaturation = BitConverter.ToUInt16(DataPacket, 9);
-            PositiveSaturation = BitConverter.ToUInt16(DataPacket, 11);
-            DeadBand = BitConverter.ToUInt16(DataPacket, 13);
+            ReadOnlySpan<byte> packetSpan = DataPacket;
+            ReadOnlySpan<short> shortSpan = MemoryMarshal.Cast<byte, short>(packetSpan.Slice(3));
+            CenterPointOffset = shortSpan[0];
+            NegativeCoefficient = shortSpan[1];
+            PositiveCoefficient = shortSpan[2];
+            NegativeSaturation = (ushort)shortSpan[3];
+            PositiveSaturation = (ushort)shortSpan[4];
+            DeadBand = (ushort)shortSpan[5];
         }
     }
     public enum ConditionParamBlockEnum

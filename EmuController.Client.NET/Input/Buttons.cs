@@ -20,50 +20,35 @@ using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Input
 {
-    public class Buttons
+    public class Buttons : ControlCollection<ushort>
     {
-        internal readonly UsageId Usage = UsageId.Button;
-
-        internal readonly BitArray ArrayMap;
-        internal readonly BitArray ButtonArray;
-
-        internal ushort[] ButtonValues { get; private set; }
-
-
         internal Buttons()
         {
-            ArrayMap = new BitArray(8);
-            ButtonArray = new BitArray(128);
-            ButtonValues = new ushort[8];
+            values = new ushort[8];
         }
 
 
         /// <summary>
-        /// Set state for button with specified index.
+        /// Set state for button with the specified index.
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="value"></param>
-        public void SetButton(int index, bool value)
-        {
-            if (index < -0 || index > 127)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-            int arrayMapIndex = (index / 16);
-            if (arrayMapIndex < 0)
-            {
-                arrayMapIndex = 0;
-            }
-            ArrayMap.Set(arrayMapIndex, true);
-            ButtonArray.Set(index, value);
-        }
+        /// <param name="pressed"></param>
 
-        internal void GetButtons()
+        public void SetValue(int index, bool pressed)
         {
-            byte[] temp = new byte[16];
-            ButtonArray.CopyTo(temp, 0);
-            Buffer.BlockCopy(temp, 0, ButtonValues, 0, temp.Length);
+            int arrayIndex = index / 16;
+            int bit = index % 16;
+            int result = values[arrayIndex];
+            if (pressed)
+            {
+                result |= 1 << bit;
+            }
+            else
+            {
+               result &= ~(1 << bit);
+            }
 
+            SetValue(arrayIndex, (ushort)result);
         }
     }
 }

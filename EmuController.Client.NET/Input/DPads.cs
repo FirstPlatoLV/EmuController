@@ -11,46 +11,34 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Input
 {
-    public class DPad
-    {
-        internal readonly UsageId Usage = UsageId.DPad;
-
-        internal readonly BitArray ArrayMap;
-
-        internal byte[] DPads { get; private set; }
-
-        internal DPad()
+    public class DPads : ControlCollection<byte>
+    {    
+        internal DPads()
         {
-            ArrayMap = new BitArray(8);
-            DPads = Enumerable.Repeat((byte)0xFF, 4).ToArray();
+            values = Enumerable.Repeat((byte)0xFF, 4).ToArray();
         }
 
-        public void SetDPad(int index, DPadDirectionEnum value)
+        /// <summary>
+        /// Set value for DPad with the specified index.
+        /// </summary>
+        /// <param name="index">Index of the DPad</param>
+        /// <param name="direction">Cardinal Direction</param>
+        public void SetValue(int index, DPadDirectionEnum direction)
         {
-            if (index > 3)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            ArrayMap.Set(index, true);
-            DPads[index] = (byte)value;
-        }
+            SetValue(index, (byte)direction);
+        }   
     }
 
     /// <summary>
-    /// DPad directions expressed as Cardinal directions 
+    /// DPad values expressed as Cardinal directions 
     /// </summary>
     public enum DPadDirectionEnum
     {
-        None = -1,
+        Null = -1,
         North = 0,
         NorthEast = 1,
         East = 2,

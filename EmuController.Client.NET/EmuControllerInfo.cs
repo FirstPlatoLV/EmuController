@@ -14,6 +14,7 @@
 using System;
 using System.IO;
 using System.Management;
+using System.Reflection;
 
 namespace EmuController.Client.NET
 {
@@ -36,26 +37,30 @@ namespace EmuController.Client.NET
         /// <param name="queryObj">Provides ManageentObject data returned by ManagementObjectSearcher</param>
         public EmuControllerInfo(ManagementObject queryObj)
         {
-            if (queryObj == null)
+
+            string hwid = (string)queryObj.Properties[nameof(HardwareId)].Value;
+
+            Version driverVersion = new Version((string)queryObj.Properties["DriverVersion"].Value);
+            Version clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+            if (clientVersion.Major != driverVersion.Major || clientVersion.Minor != driverVersion.Minor)
             {
-                throw new ArgumentNullException(nameof(queryObj));
+                throw new ArgumentOutOfRangeException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
+                    driverVersion.Major, driverVersion.Minor, 
+                    clientVersion.Major, clientVersion.Minor));
             }
-
-            string[] hwid = (string[])queryObj.Properties[nameof(HardwareId)].Value;
-
-
 
             // We need only the Vīd/Pid information about the device
             string prefix = "ROOT\\";
 
             if (hwid != null)
             {
-                HardwareId = hwid[0].Substring(prefix.Length);
+                HardwareId = hwid.Substring(prefix.Length);
             }
             else
             {
                 // In case user installed the device manually through device manager (which should not be done), the hardwareId will be incorrect,
-                // So we replace it with predefined one. 
+                // So we replace it with a predefined one. 
                 HardwareId = "VID_DEED&PID_FE00";
             }
 

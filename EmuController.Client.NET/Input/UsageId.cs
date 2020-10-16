@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Input
 {
-    public enum UsageId
+    public enum UsageId : byte
     {
         Axis = 0x10,
         Button = 0x11,

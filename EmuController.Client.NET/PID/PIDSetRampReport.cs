@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,8 +35,9 @@ namespace EmuController.Client.NET.PID
         protected override void Deserialize()
         {
             EffectBlockIndex = DataPacket[1];
-            RampStart = BitConverter.ToInt16(DataPacket, 2);
-            RampEnd = BitConverter.ToInt16(DataPacket, 4);
+            ReadOnlySpan<short> packetSpan = MemoryMarshal.Cast<byte, short>(DataPacket);
+            RampStart = packetSpan[1];
+            RampEnd = packetSpan[2];
         }
     }
 }

@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,10 +35,11 @@ namespace EmuController.Client.NET.PID
         protected override void Deserialize()
         {
             EffectBlockIndex = DataPacket[1];
-            Magnitude = BitConverter.ToUInt16(DataPacket, 2);
+            ReadOnlySpan<ushort> packetSpan = MemoryMarshal.Cast<byte, ushort>(DataPacket);
+            Magnitude = packetSpan[1];
             Offset = BitConverter.ToInt16(DataPacket, 4);
-            Phase = BitConverter.ToUInt16(DataPacket, 6);
-            Period = BitConverter.ToUInt16(DataPacket, 8);
+            Phase = packetSpan[3];
+            Period = packetSpan[4];
         }
     }
 }

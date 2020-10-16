@@ -13,8 +13,7 @@
 // limitations under the License.
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 
 namespace EmuController.Client.NET
 {
@@ -22,22 +21,33 @@ namespace EmuController.Client.NET
     {
         public static string GetStringFromRegistry(string regPath, string regKeyName)
         {
+            RegistryKey key = null;
             string res = string.Empty;
             try
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(regPath);
+                key = Registry.CurrentUser.OpenSubKey(regPath);
                 if (key != null)
                 {
                     res = (string)key.GetValue(regKeyName);
                 }
             }
-            catch
+            finally
             {
-                // If GetValue() fails we just don't want to make a fuss about it,
-                // since having no device friendly name does not really affect functionality of our feeder.
+                if (key != null)
+                {
+                    key.Dispose();
+                }
             }
 
             return res;
+        }
+        public static bool IsBitSet<T>(T b, int pos) where T :
+            IComparable, IComparable<T>, 
+            IConvertible, IEquatable<T>, 
+            IFormattable
+        {
+            long val = b.ToInt64(CultureInfo.CurrentCulture);
+            return (val & (1 << pos)) != 0;
         }
     }
 }

@@ -11,12 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+using EmuController.Client.NET.PID;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -38,15 +40,16 @@ namespace EmuController.Client.NET.Input
         /// <summary>
         /// Stores values for dpad type controls.
         /// </summary>
-        public DPad DPads { get; private set; }
+        public DPads DPads { get; private set; }
         
         /// <summary>
         /// Stores values for button type controls.
         /// </summary>
         public Buttons Buttons { get; private set; }
 
-        internal EmuInputState()
+        public EmuInputState()
         {
+            GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
             CreateDefaultState();
         }
 
@@ -54,13 +57,12 @@ namespace EmuController.Client.NET.Input
         {
             Axes = new Axes();
             Buttons = new Buttons();
-            DPads = new DPad();
+            DPads = new DPads();
         }
 
-        internal byte[] GetStateUpdateMessage()
+        public byte[] GetStateUpdateMessage()
         {
             byte[] message;
-            byte messageLen;
 
             MessageHeader msgHeader = new MessageHeader()
             {
@@ -74,82 +76,51 @@ namespace EmuController.Client.NET.Input
                 writer.Write((byte)msgHeader.Type);
                 writer.Write(msgHeader.Length);
 
-
-                byte[] arrayMap = new byte[1];
-                Axes.ArrayMap.CopyTo(arrayMap, 0);
-
-                if (arrayMap[0] != 0)
+                ReadOnlySpan<ushort> axes = Axes.GetUpdatedValues();
+                if (axes != null)
                 {
-                    writer.Write((byte)Axes.Usage);
-                    writer.Write(arrayMap);
-
-                    for (int i = 0; i < Axes.ArrayMap.Count; i++)
-                    {
-                        if (Axes.ArrayMap.Get(i))
-                        {
-                            writer.Write(Axes.AxisValues[i]);
-                        }
-                    }
+                    writer.Write((byte)UsageId.Axis);
+                    writer.Write(Axes.ArrayMap);
+                    writer.Write(MemoryMarshal.Cast<ushort, byte>(axes));
                 }
 
-                Buttons.ArrayMap.CopyTo(arrayMap, 0);
-
-                if (arrayMap[0] != 0)
+                ReadOnlySpan<ushort> buttons = Buttons.GetUpdatedValues();
+                if (buttons != null)
                 {
-                    Buttons.GetButtons();
-                    writer.Write((byte)Buttons.Usage);
-                    writer.Write(arrayMap);
-
-                    for (int i = 0; i < Buttons.ArrayMap.Count; i++)
-                    {
-                        if (Buttons.ArrayMap.Get(i))
-                        {
-                            writer.Write(Buttons.ButtonValues[i]);
-                        }
-                    }
+                    writer.Write((byte)UsageId.Button);
+                    writer.Write(Buttons.ArrayMap);
+                    writer.Write(MemoryMarshal.Cast<ushort, byte>(buttons));
                 }
 
-                DPads.ArrayMap.CopyTo(arrayMap, 0);
+                ReadOnlySpan<byte> dpads = DPads.GetUpdatedValues();
 
-                if (arrayMap[0] != 0)
+                if (dpads != null)
                 {
-                    writer.Write((byte)DPads.Usage);
-                    writer.Write(arrayMap);
-                    for (int i = 0; i < DPads.ArrayMap.Count; i++)
-                    {
-                        if (DPads.ArrayMap.Get(i))
-                        {
-                            writer.Write(DPads.DPads[i]);
-                        }
-                    }
+                    writer.Write((byte)UsageId.DPad);
+                    writer.Write(DPads.ArrayMap);
+                    writer.Write(dpads);
                 }
+                message = stream.ToArray();
             }
-            message = stream.ToArray();
-            
 
             if (message.Length > MessageLengthMax)
             {
-                throw new Exception(Resources.ErrorMessageLengthMax);
+                throw new ArgumentException(Resources.ErrorMessageLengthMax);
             }
-            messageLen = (byte)(message.Length - MessageHeaderLength);
-            
-            // We change the MessageHeader.Length to the MessageLength;
-            message[1] = messageLen;
-
-            // Nothing to update
-            if (messageLen < 3)
+            else if (message.Length < 3)
             {
                 return null;
             }
 
+            // We change the MessageHeader.Length to the MessageLength;
+            message[1] = (byte)(message.Length - MessageHeaderLength);
             CreateDefaultState();
             return message;
         }
 
-        internal byte[] GetInputReportMessage()
+        public byte[] GetInputReportMessage()
         {
             byte[] message;
-            byte messageLen;
 
             MessageHeader msgHeader = new MessageHeader()
             {
@@ -166,39 +137,15 @@ namespace EmuController.Client.NET.Input
                 byte reportId = 1;
                 writer.Write(reportId);
 
-                Buttons.GetButtons();
-
-                for (int i = 0; i < Buttons.ButtonValues.Length; i++)
-                {
-                    writer.Write(Buttons.ButtonValues[i]);
-                }
-
-                for (int i = 0; i < DPads.DPads.Length; i++)
-                {
-                    writer.Write(DPads.DPads[i]);
-                }
-
-                for (int i = 0; i < Axes.AxisValues.Length; i++)
-                {
-                    writer.Write(Axes.AxisValues[i]);
-                }
+                writer.Write(MemoryMarshal.Cast<ushort, byte>(Buttons.AllValues));
+                writer.Write(DPads.AllValues);
+                writer.Write(MemoryMarshal.Cast<ushort, byte>(Axes.AllValues));
             }
-
+;
             message = stream.ToArray();
-            
-
-
-            messageLen = (byte)(message.Length - MessageHeaderLength);
 
             // We change the MessageHeader.Length to the MessageLength;
-            message[1] = messageLen;
-
-            // Nothing to update
-            if (messageLen < 3)
-            {
-                return null;
-            }
-
+            message[1] = (byte)(message.Length - MessageHeaderLength);
             CreateDefaultState();
             return message;
         }
