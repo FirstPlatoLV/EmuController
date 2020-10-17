@@ -45,7 +45,7 @@ namespace EmuController.Client.NET
 
             if (clientVersion.Major != driverVersion.Major || clientVersion.Minor != driverVersion.Minor)
             {
-                throw new ArgumentOutOfRangeException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
+                throw new EmuControllerException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
                     driverVersion.Major, driverVersion.Minor, 
                     clientVersion.Major, clientVersion.Minor));
             }

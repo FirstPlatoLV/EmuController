@@ -131,7 +131,7 @@ namespace EmuController.Client.NET
                 return false;
             }
 
-            InstanceInfo = instanceInfo ?? throw new ArgumentNullException(nameof(instanceInfo));
+            InstanceInfo = instanceInfo;
 
             InputPipeClient = new NamedPipeClientStream(".", instanceInfo.HardwareId + InputPipeSuffix, PipeDirection.Out);
             InputPipeClient.Connect(PipeTimeOut);
@@ -157,7 +157,7 @@ namespace EmuController.Client.NET
                 return false;
             }
 
-            InstanceInfo = instanceInfo ?? throw new ArgumentNullException(nameof(instanceInfo));
+            InstanceInfo = instanceInfo;
 
             FFBPipeClient = new NamedPipeClientStream(".", InstanceInfo.HardwareId + FFBPipeSuffix, PipeDirection.InOut);
             FFBPipeClient.Connect(PipeTimeOut);
