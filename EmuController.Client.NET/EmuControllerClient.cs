@@ -192,6 +192,50 @@ namespace EmuController.Client.NET
             InputPipeClient.Write(buffer, 0, buffer.Length);
         }
 
+        /// <summary>
+        /// Reports to host about the FFB system of the EmuController
+        /// </summary>
+        /// <param name="isPaused">Report the state of FFB system</param>
+        public void ReportFFBState(bool isPaused)
+        {
+            byte[] message = new byte[6];
+
+            MessageHeader msgHeader = new MessageHeader()
+            {
+                Type = MessageHeader.MessageType.PID
+            };
+
+            message[1] = 4;
+            message[2] = (byte)(isPaused? 1 : 0);
+            InputPipeClient.Write(message, 0, message.Length);
+        }
+
+        /// <summary>
+        /// Reports to host about the state of the FFB Effect.
+        /// </summary>
+        /// <param name="index">The Effect Block Index</param>
+        /// <param name="isPlaying">State of the effect</param>
+        public void ReportFFBEffectState(int index, bool isPlaying)
+        {
+            if (index < 1 || index > 127)
+            {
+                throw new EmuControllerException("Index out of range!");
+            }
+
+            byte[] message = new byte[6];
+
+            MessageHeader msgHeader = new MessageHeader()
+            {
+                Type = MessageHeader.MessageType.PID
+            };
+
+            message[1] = 4;
+            message[3] = (byte)(isPlaying ? 1 : 0);
+            message[4] = (byte)index;
+            InputPipeClient.Write(message, 0, message.Length);
+        }
+
+
         private Task GetFFBMessages()
         {
             // No output report for current EmuController HID report exceeds 32 bytes.

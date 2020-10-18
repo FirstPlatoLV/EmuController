@@ -101,10 +101,6 @@ namespace EmuController.Client.NET.Demo
         private void FFBDataReceived(object sender, FFBDataReceivedEventArgs e)
         {
             // Outputs packet type that EmuController received.
-            if (e.ReportId == PIDReportIdEnum.SetConstant)
-            {
-
-            }
             Console.WriteLine(e.ReportId.ToString());
         }
     }
