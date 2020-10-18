@@ -83,12 +83,12 @@ HID_REPORT_DESCRIPTOR       G_DefaultReportDescriptor[] = {
 	0x81, 0x02,         //     INPUT (Data,Var,Abs)
 	0xC0,               //   END_COLLECTION
 	
-	0x05, 0x0F,			//   USAGE_PAGE(Physical Interface)
+	0x05, 0x0F,			//   USAGE_PAGE (Physical Interface)
 	0x09, 0x92,			//   USAGE (PID State report) 
 	0xA1, 0x02,			//   COLLECTION (Logical)
 	0x85, PID_INPUT_REPORT_ID, 
-	0x09, 0x9F,			//     USAGE(DS Device is Reset)
-	0x09, 0xA0,			//     USAGE (DS Device is Pause)
+	0x09, 0x9F,			//     USAGE (DS Device is Paused)
+	0x09, 0xA0,			//     USAGE (Actuators Enabled)
 	0x09, 0xA4,			//     USAGE (Safety Switch)
 	0x09, 0xA5,			//     USAGE (Actuator Override Switch)
 	0x09, 0xA6,			//     USAGE (Actuator Power)
