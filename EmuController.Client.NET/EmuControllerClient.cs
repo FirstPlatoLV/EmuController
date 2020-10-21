@@ -179,6 +179,10 @@ namespace EmuController.Client.NET
         public void SendUpdate()
         {
             byte[] buffer = InputState.GetStateUpdateMessage();
+            if (buffer == null)
+            {
+                return;
+            }
             InputPipeClient.Write(buffer, 0, buffer.Length);
         }
 
@@ -195,18 +199,19 @@ namespace EmuController.Client.NET
         /// <summary>
         /// Reports to host about the FFB system of the EmuController
         /// </summary>
-        /// <param name="isPaused">Report the state of FFB system</param>
-        public void ReportFFBState(bool isPaused)
+        /// <param name="pidStateFlags">Report the state of the FFB system</param>
+        public void ReportFFBState(PIDStateFlags pidStateFlags)
         {
-            byte[] message = new byte[6];
+            byte[] message = new byte[5];
 
             MessageHeader msgHeader = new MessageHeader()
             {
                 Type = MessageHeader.MessageType.PID
             };
 
-            message[1] = 4;
-            message[2] = (byte)(isPaused? 1 : 0);
+            message[1] = 3;
+            message[2] = 0x02;
+            message[3] = (byte)pidStateFlags;
             InputPipeClient.Write(message, 0, message.Length);
         }
 
@@ -230,6 +235,7 @@ namespace EmuController.Client.NET
             };
 
             message[1] = 4;
+            message[2] = (byte)PIDStateFlags.Default;
             message[3] = (byte)(isPlaying ? 1 : 0);
             message[4] = (byte)index;
             InputPipeClient.Write(message, 0, message.Length);

@@ -207,6 +207,32 @@ Return Value:
 		if (pDc->DeviceControlCommand == PID_DEVICE_RESET_CMD)
 		{
 			QueueContext->DeviceContext->EffectBlockIndex = 0;
+			QueueContext->DeviceContext->JoyPidStateReport.DevicePaused = 0;
+			QueueContext->DeviceContext->JoyPidStateReport.ReportId = PID_INPUT_REPORT_ID;
+			QueueContext->DeviceContext->JoyPidStateReport.ActuatorPower = 1;
+			QueueContext->DeviceContext->JoyPidStateReport.ActuatorsEnabled = 1;
+			CompleteReadRequest(QueueContext->DeviceContext, JOY_INPUT_PID_STATE_REPORT);
+			TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL,
+				"Default PID state set!");
+
+			if (!QueueContext->DeviceContext->PipeServerAttributes.InputPipeConnected)
+			{
+				SetDefaultControllerState(&QueueContext->DeviceContext->JoyInputReport);
+				CompleteReadRequest(QueueContext->DeviceContext, JOY_INPUT_REPORT_FULL);
+				TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL,
+					"Default Joystick state set!");
+
+				if (!PeekNamedPipe(
+					QueueContext->DeviceContext->PipeServerAttributes.PidPipeHandle,
+					NULL,
+					0,
+					NULL,
+					NULL,
+					NULL))
+				{
+					CloseHandle(QueueContext->DeviceContext->PipeServerAttributes.PidPipeHandle);
+				}
+			}
 		}
 	}
 

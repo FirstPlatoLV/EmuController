@@ -240,7 +240,7 @@ typedef struct _PID_EFFECT_OPERATION_REPORT
 typedef struct _PID_DEVICE_CONTROL_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x19
-	UCHAR DeviceControlCommand;	// EnableActuactors = 1,
+	UCHAR DeviceControlCommand;	// EnableActuators = 1,
 						// DisableActuactors = 2,
 						// StopAllEffects = 3,
 						// Reset = 4,

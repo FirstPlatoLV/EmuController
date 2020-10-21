@@ -188,7 +188,8 @@ DWORD WINAPI InputPipeServerThread(
 		);
 
 		queueContext = QueueGetContext(devContext->ManualQueue);
-		
+		devContext->PipeServerAttributes.InputPipeConnected = TRUE;
+
 		// Initializing JoyInputReport with default values.
 		SetDefaultControllerState(&queueContext->DeviceContext->JoyInputReport);
 
@@ -283,6 +284,9 @@ DWORD WINAPI InputPipeServerThread(
 			return 0;
 
 		}
+
+		devContext->PipeServerAttributes.InputPipeConnected = FALSE;
+
 		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
 			"Input client disconnected from %ws\n", 
 			(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName
@@ -372,16 +376,6 @@ DWORD WINAPI PidPipeServerThread(
 				TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
 					"Old FFB client lost. Changing client...\n");
 
-				//if (!DisconnectNamedPipe(devContext->PipeServerAttributes.PidPipeHandle))
-				//{
-
-				//	TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-				//		"DisconnectNamedPipe failed with %d\n", GetLastError()
-				//	);
-				//CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
-			 //   devContext->PipeServerAttributes.PidPipeHandle = NULL;
-
-
 				// The newly connected client candidate is now the actual client.
 				CloseHandle(devContext->PipeServerAttributes.PidPipeHandle);
 			    devContext->PipeServerAttributes.PidPipeHandle = hPipe;
@@ -432,11 +426,11 @@ WriteResponseToPidClient(
 				"FFB client disconnected from %ws\n",
 				(LPCWSTR)queueContext->DeviceContext->PipeServerAttributes.PidPipePathName
 			);
-
-			if (GetLastError() != ERROR_PIPE_NOT_CONNECTED)
+			DWORD lastError = GetLastError();
+			if (lastError != ERROR_PIPE_NOT_CONNECTED && lastError != ERROR_INVALID_HANDLE)
 			{
 				TraceEvents(TRACE_LEVEL_ERROR, TRACE_PIPE,
-					"DisconnectNamedPipe failed with %d\n", GetLastError()
+					"DisconnectNamedPipe failed with %d\n", lastError
 				);
 			}
 			CloseHandle(queueContext->DeviceContext->PipeServerAttributes.PidPipeHandle);
@@ -466,6 +460,12 @@ CompleteReadRequest(
 
 	if (!NT_SUCCESS(status))
 	{
+		// If there are no requests in queue, no need to do anything.
+		if (status == STATUS_NO_MORE_ENTRIES)
+		{
+			return;
+		}
+
 		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_PIPE,
 			"WdfIoQueueRetrieveNextRequest failed with status %!STATUS!",
 			status
@@ -473,13 +473,6 @@ CompleteReadRequest(
 
 		goto errorExit;
 	}
-
-	// If there are no requests in queue, no need to do anything.
-	if (status == STATUS_NO_MORE_ENTRIES)
-	{
-		return;
-	}
-
 
 	status = WdfRequestRetrieveOutputBuffer(
 		reqRead,
@@ -502,11 +495,11 @@ CompleteReadRequest(
 	if (bytesReturned > 1)
 	{
 		// We copy the report that was populated by data received from Input client
-		if (ReportId < JOY_INPUT_PID_STATE_REPORT)
+		if (ReportId == JOY_INPUT_REPORT_PARTIAL || ReportId == JOY_INPUT_REPORT_FULL)
 		{
 			RtlCopyMemory(pReadReport, &devContext->JoyInputReport, bytesReturned);
 		}
-		else
+		else if (ReportId == JOY_INPUT_PID_STATE_REPORT)
 		{
 			RtlCopyMemory(pReadReport, &devContext->JoyPidStateReport, bytesReturned);
 		}

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmuController.Client.NET", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmuController.Client.NET.Demo", "EmuController.Client.NET.Demo\EmuController.Client.NET.Demo.csproj", "{B18ED9C7-70F7-4849-902D-2334CC5EFC9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmuController.Client.NETTests", "EmuController.Client.NETTests\EmuController.Client.NETTests.csproj", "{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmuController.Client.NETTests", "EmuController.Client.NETTests\EmuController.Client.NETTests.csproj", "{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,8 +107,8 @@ Global
 		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|ARM.Build.0 = Release|Any CPU
 		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|ARM64.ActiveCfg = Release|Any CPU
 		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|ARM64.Build.0 = Release|Any CPU
-		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x64.ActiveCfg = Release|Any CPU
-		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x64.Build.0 = Release|Any CPU
+		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x64.ActiveCfg = Release|x64
+		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x64.Build.0 = Release|x64
 		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x86.ActiveCfg = Release|Any CPU
 		{34FAC7B5-4DAD-4CA1-9453-13C1FF2C8875}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
