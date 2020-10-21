@@ -196,52 +196,6 @@ namespace EmuController.Client.NET
             InputPipeClient.Write(buffer, 0, buffer.Length);
         }
 
-        /// <summary>
-        /// Reports to host about the FFB system of the EmuController
-        /// </summary>
-        /// <param name="pidStateFlags">Report the state of the FFB system</param>
-        public void ReportFFBState(PIDStateFlags pidStateFlags)
-        {
-            byte[] message = new byte[5];
-
-            MessageHeader msgHeader = new MessageHeader()
-            {
-                Type = MessageHeader.MessageType.PID
-            };
-
-            message[1] = 3;
-            message[2] = 0x02;
-            message[3] = (byte)pidStateFlags;
-            InputPipeClient.Write(message, 0, message.Length);
-        }
-
-        /// <summary>
-        /// Reports to host about the state of the FFB Effect.
-        /// </summary>
-        /// <param name="index">The Effect Block Index</param>
-        /// <param name="isPlaying">State of the effect</param>
-        public void ReportFFBEffectState(int index, bool isPlaying)
-        {
-            if (index < 1 || index > 127)
-            {
-                throw new EmuControllerException("Index out of range!");
-            }
-
-            byte[] message = new byte[6];
-
-            MessageHeader msgHeader = new MessageHeader()
-            {
-                Type = MessageHeader.MessageType.PID
-            };
-
-            message[1] = 4;
-            message[2] = (byte)PIDStateFlags.Default;
-            message[3] = (byte)(isPlaying ? 1 : 0);
-            message[4] = (byte)index;
-            InputPipeClient.Write(message, 0, message.Length);
-        }
-
-
         private Task GetFFBMessages()
         {
             // No output report for current EmuController HID report exceeds 32 bytes.
