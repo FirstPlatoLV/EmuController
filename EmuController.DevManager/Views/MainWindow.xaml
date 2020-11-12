@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmuController.DevManager" 
         xmlns:converters="clr-namespace:EmuController.DevManager.ValueConverters"
-                 d:DataContext="{d:DesignInstance Type=local:EmuControllerDevice}"
+                 
                  mc:Ignorable="d"
         Title="EmuController Device Manager" Height="550" Width="600" ResizeMode="NoResize"
         TitleCharacterCasing="Normal">
