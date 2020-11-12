@@ -14,6 +14,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SetupApi.NET", "SetupApi.NET\SetupApi.NET.csproj", "{AF8251A0-2320-4282-A9C2-F127AD220B59}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmuController.DevManager", "EmuController.DevManager\EmuController.DevManager.csproj", "{26F5CF9A-0B07-43BE-9700-E29F72BB8B78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF8251A0-2320-4282-A9C2-F127AD220B59} = {AF8251A0-2320-4282-A9C2-F127AD220B59}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
