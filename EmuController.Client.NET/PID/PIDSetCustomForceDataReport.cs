@@ -40,7 +40,7 @@ namespace EmuController.Client.NET.PID
             DataOffset = BitConverter.ToUInt16(DataPacket, 2);
 
             ReadOnlySpan<byte> packetSpan = DataPacket;
-            data = packetSpan.Slice(4).ToArray();
+            data = packetSpan[4..].ToArray();
         }
     }
 }

@@ -3,9 +3,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SetupApi.NET
+namespace SetupAPI.NET
 {
-    public partial class Devcon
+    public partial class DeviceConfig
     {
         /// <summary>
         /// Install a device defined in the INF file with matching hardwareId
@@ -133,7 +133,7 @@ namespace SetupApi.NET
                     string hwId = Marshal.PtrToStringAuto(pPropertyBuffer);
                     Marshal.FreeHGlobal(pPropertyBuffer);
 
-                    if (hwId == hardwareId)
+                    if (hwId.Equals(hardwareId))
                     {
                         SP_REMOVEDEVICE_PARAMS classInstallParams = new SP_REMOVEDEVICE_PARAMS();
                         classInstallParams.ClassInstallHeader.CbSize = (uint)Marshal.SizeOf(classInstallParams.ClassInstallHeader);
@@ -179,10 +179,11 @@ namespace SetupApi.NET
             ChangeDeviceState(hardwareId, DIC_STATE.DICS_DISABLE);
         }
 
-        private static void ChangeDeviceState(string hardwareId, DIC_STATE stateChange)
+        private static int ChangeDeviceState(string hardwareId, DIC_STATE stateChange)
         {
 
             IntPtr deviceInfoSet = IntPtr.Zero;
+            int error = 0;
 
             try
             {
@@ -212,7 +213,8 @@ namespace SetupApi.NET
                         ref deviceInfoData,
                         SPDRP_HARDWAREID,
                         IntPtr.Zero,
-                        IntPtr.Zero, 0,
+                        IntPtr.Zero, 
+                        0,
                         ref requiredSize);
 
                     if (requiredSize == 0)
@@ -237,15 +239,27 @@ namespace SetupApi.NET
                     string hwId = Marshal.PtrToStringAuto(pPropertyBuffer);
                     Marshal.FreeHGlobal(pPropertyBuffer);
 
-                    if (hwId == hardwareId)
+                    if (hwId.Equals(hardwareId))
                     {
                         SP_PROPCHANGE_PARAMS propChangeParams = new SP_PROPCHANGE_PARAMS();
                         propChangeParams.ClassInstallHeader.CbSize = (uint)Marshal.SizeOf(propChangeParams.ClassInstallHeader);
                         propChangeParams.ClassInstallHeader.InstallFunction = DI_FUNCTION.DIF_PROPERTYCHANGE;
                         propChangeParams.Scope = DI_REMOVEDEVICE_GLOBAL;
                         propChangeParams.StateChange = stateChange;
-                        SetupDiSetClassInstallParams(deviceInfoSet, ref deviceInfoData, ref propChangeParams, (uint)Marshal.SizeOf(propChangeParams));
-                        SetupDiChangeState(deviceInfoSet, ref deviceInfoData);
+                        if(!SetupDiSetClassInstallParams(
+                            deviceInfoSet, 
+                            ref deviceInfoData, 
+                            ref propChangeParams, 
+                            (uint)Marshal.SizeOf(propChangeParams)))
+                        {
+                            error = Marshal.GetLastWin32Error();
+                        }
+                        if(!SetupDiChangeState(
+                            deviceInfoSet,
+                            ref deviceInfoData))
+                        {
+                            error = Marshal.GetLastWin32Error();
+                        }
                     }
                 }
             }
@@ -256,6 +270,8 @@ namespace SetupApi.NET
                     SetupDiDestroyDeviceInfoList(deviceInfoSet);
                 }
             }
+
+            return error;
         }
     }
 }

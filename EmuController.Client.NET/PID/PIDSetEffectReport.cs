@@ -44,7 +44,7 @@ namespace EmuController.Client.NET.PID
             EffectType = (PIDEffectTypeEnum)DataPacket[2];
 
             ReadOnlySpan<byte> packetSpan = DataPacket;
-            ReadOnlySpan<ushort> shortSpan = MemoryMarshal.Cast<byte, ushort>(packetSpan.Slice(3));
+            ReadOnlySpan<ushort> shortSpan = MemoryMarshal.Cast<byte, ushort>(packetSpan[3..]);
 
 
             Duration = shortSpan[0];

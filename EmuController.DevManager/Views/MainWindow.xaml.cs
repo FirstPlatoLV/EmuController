@@ -3,13 +3,10 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Windows;
 using System.Windows.Controls;
-using SetupAPI.NET;
 using System.Threading.Tasks;
-using WUApiLib;
+using SetupAPI.NET;
 
 namespace EmuController.DevManager.Views
 {
@@ -93,6 +90,7 @@ namespace EmuController.DevManager.Views
             EmuControllerDevice device = (EmuControllerDevice)deviceClicked.DataContext;
             ProgressDialogController progressController = await this.ShowProgressAsync("Installing device", "Please wait...", false, dialogSettings);
 
+            
             DeviceConfig.InstallDeviceFromInf(Path.Combine(Directory.GetCurrentDirectory() , "Emucontroller.inf"), 
                 Path.Combine(device.IdPrefix, device.DeviceId), 
                 out bool restartNeeded);

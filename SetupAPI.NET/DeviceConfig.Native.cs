@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace SetupApi.NET
+namespace SetupAPI.NET
 {
-    public partial class Devcon
+    public partial class DeviceConfig
     {
         private const uint MAX_PATH = 260;
         private const uint MAX_CLASS_NAME_LEN = 128;
@@ -180,3 +182,5 @@ namespace SetupApi.NET
             ref bool BRebootRequired);
     }
 }
+
+

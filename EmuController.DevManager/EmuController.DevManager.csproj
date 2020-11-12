@@ -10,28 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="App.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="hamburger_graphics.png" />
-    <None Remove="Icons\settings_icon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="App.xaml" />
-    <Page Remove="_App.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.3.3" />
     <PackageReference Include="System.Management" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Interop.WUApiLib">
-      <HintPath>D:\Visual Studio\source\repos\EmuController-ind\EmuController.Client.NET\obj\x64\Debug\netcoreapp3.1\Interop.WUApiLib.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\SetupAPI.NET\SetupAPI.NET.csproj" />
   </ItemGroup>
 
   <ItemGroup>

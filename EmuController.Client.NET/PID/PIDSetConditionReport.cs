@@ -43,7 +43,7 @@ namespace EmuController.Client.NET.PID
             ParameterBlockOffset = (ConditionParamBlockEnum)(DataPacket[2] & 0x0F);
 
             ReadOnlySpan<byte> packetSpan = DataPacket;
-            ReadOnlySpan<short> shortSpan = MemoryMarshal.Cast<byte, short>(packetSpan.Slice(3));
+            ReadOnlySpan<short> shortSpan = MemoryMarshal.Cast<byte, short>(packetSpan[3..]);
             CenterPointOffset = shortSpan[0];
             NegativeCoefficient = shortSpan[1];
             PositiveCoefficient = shortSpan[2];
