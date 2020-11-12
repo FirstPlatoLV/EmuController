@@ -100,20 +100,13 @@ CreateNamedPipeServer(
 		return 1;
 	}
 
-
-
-	// We can use the INPUT_INSTANCES = 1 value to prevent users from accidentally installing
-	// more than one device with the same Vendor and Product ID, since when driver is first
-	// initialized, if there is already a named pipe sever instance with the same InputPipePathName,
-	// the CreateNamedPipe() will fail.
-
 	devContext->PipeServerAttributes.InputPipeHandle = CreateNamedPipe(
 		(LPCWSTR)devContext->PipeServerAttributes.InputPipePathName,    // Pipe name 
 		PIPE_ACCESS_INBOUND, // Server will be receiving messages only
 		PIPE_TYPE_MESSAGE | 
 		PIPE_READMODE_MESSAGE | // Data is read from the pipe as a stream of messages.
 		PIPE_WAIT, // blocking mode 
-		INPUT_INSTANCES,   // No more than one instance can be created for this pipe
+		INPUT_INSTANCES,
 		BUFFER_SIZE,  // Output buffer size 
 		BUFFER_SIZE,  // Input buffer size 
 		0,   // Client time-out 
