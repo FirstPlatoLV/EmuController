@@ -34,7 +34,7 @@ namespace EmuController.Client.NET
         /// <summary>
         ///  Creates a new EmuControllerInfo object.
         /// </summary>
-        /// <param name="queryObj">Provides ManageentObject data returned by ManagementObjectSearcher</param>
+        /// <param name="queryObj">Provides ManagementObject data returned by ManagementObjectSearcher</param>
         public EmuControllerInfo(ManagementObject queryObj)
         {
 
@@ -45,17 +45,17 @@ namespace EmuController.Client.NET
 
             if (clientVersion.Major != driverVersion.Major || clientVersion.Minor != driverVersion.Minor)
             {
-                throw new EmuControllerException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
-                    driverVersion.Major, driverVersion.Minor, 
+                throw new EmuControllerException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}",
+                    driverVersion.Major, driverVersion.Minor,
                     clientVersion.Major, clientVersion.Minor));
             }
 
-            // We need only the Vīd/Pid information about the device
+            // We need only the Vid/Pid information about the device
             string prefix = "ROOT\\";
 
             if (hwid != null)
             {
-                HardwareId = hwid.Substring(prefix.Length);
+                HardwareId = hwid[prefix.Length..];
             }
             else
             {
