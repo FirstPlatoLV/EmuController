@@ -9,6 +9,14 @@
     <StartupObject>EmuController.DevManager.Start</StartupObject>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>C:\Users\keith\source\repos\EmuController\x64\Debug\EmuController\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.3.3" />
     <PackageReference Include="System.Management" Version="4.7.0" />
