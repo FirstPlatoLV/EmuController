@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SetupAPI.NET\SetupAPI.NET.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Icons\settings_icon.png" />
   </ItemGroup>
 
