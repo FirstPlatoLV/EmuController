@@ -20,7 +20,7 @@ namespace EmuController.DevManager
 {
     public static class Utils
     {
-        public static string GetStringFromRegistry(string regPath, string regKeyName)
+        public static string GetStringFromRegistry(string regPath, string regValueName)
         {
             RegistryKey key = null;
             string res = string.Empty;
@@ -29,7 +29,7 @@ namespace EmuController.DevManager
                 key = Registry.CurrentUser.OpenSubKey(regPath);
                 if (key != null)
                 {
-                    res = (string)key.GetValue(regKeyName);
+                    res = (string)key.GetValue(regValueName);
                 }
             }
             finally
