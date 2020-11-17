@@ -11,28 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-using System;
-using System.Collections.Generic;
+using EmuController.DevManager.Commands;
+using SetupAPI.NET;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 
-namespace EmuController.DevManager
+namespace EmuController.DevManager.ViewModels
 {
     public class EmuControllerDevice : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string caller = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
-        }
-
+    {   
         private string deviceName;
         public string DeviceName
         {
             get => deviceName; set { deviceName = value; OnPropertyChanged(); }
+        }
+
+        private string deviceNewName;
+        public string DeviceNewName
+        {
+            get => deviceNewName; set { deviceNewName = value; OnPropertyChanged(); }
         }
 
         private string deviceId;
@@ -53,7 +51,28 @@ namespace EmuController.DevManager
 
         public bool IsInstalled
         {
-            get => isInstalled; set { isInstalled = value; OnPropertyChanged(); }
+            get => isInstalled; 
+            set 
+            { 
+                isInstalled = value;                       
+
+                if (IsInstalled)
+                {
+                    DeviceStatus = "Disabled";
+                }
+                else
+                {
+                    DeviceStatus = "Not Installed";
+                }
+
+                OnPropertyChanged();
+            }
+        }
+
+        private string deviceStatus;
+        public string DeviceStatus
+        {
+            get => deviceStatus; set { deviceStatus = value; OnPropertyChanged(); }
         }
 
         public int DeviceIndex { get; set; }
@@ -76,6 +95,30 @@ namespace EmuController.DevManager
         {
             string path = Path.Combine(JoystickRegPath, DeviceId);
             return Utils.GetStringFromRegistry(path, RegValueName);
+        }
+        public bool InstallDevice()
+        {
+            DeviceConfig.InstallDeviceFromInf(Path.Combine(Directory.GetCurrentDirectory(), AppSettings.Instance.FilePath, @"Emucontroller.inf"),
+               Path.Combine(IdPrefix, DeviceId),
+               out bool restartNeeded);
+
+            SetDeviceFriendlyName("EmuController Device #" + (DeviceIndex + 1).ToString());
+            WMIPnpEntity.SetDeviceStatus(this);
+
+            return restartNeeded;
+        }
+
+        public void UninstallDevice()
+        {
+            DeviceConfig.UninstallDevice(Path.Combine(IdPrefix, DeviceId));
+            SetDeviceFriendlyName("EmuController Device #" + (DeviceIndex + 1).ToString());
+            WMIPnpEntity.SetDeviceStatus(this);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string caller = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
         }
     }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FilePath>drv\</FilePath>
+  <ExpectedFiles>
+    <string>emucontroller.cat</string>
+    <string>emucontroller.dll</string>
+    <string>emucontroller.inf</string>
+  </ExpectedFiles>
+</AppSettings>

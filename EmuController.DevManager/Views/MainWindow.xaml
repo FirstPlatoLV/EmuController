@@ -4,100 +4,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EmuController.DevManager" 
-        xmlns:converters="clr-namespace:EmuController.DevManager.ValueConverters"
-                 
+        xmlns:local="clr-namespace:EmuController.DevManager.Views"
                  mc:Ignorable="d"
-        Title="EmuController Device Manager" Height="550" Width="600" ResizeMode="NoResize"
-        TitleCharacterCasing="Normal">
-    <mah:MetroWindow.Resources>
-        <Style TargetType="{x:Type Image}">
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="MouseLeftButtonUp">
-                    <EventTrigger.Actions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger.Actions>
-                </EventTrigger>
-            </Style.Triggers>
-        </Style>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-        <Style TargetType="{x:Type Label}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Label">
-                        <Border>
-                            <ContentPresenter
-                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                  RecognizesAccessKey="False" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity"
-                            Value="0.5"/>
-                    <Setter Property="Foreground"
-                            Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </mah:MetroWindow.Resources>
-    <StackPanel Margin="10">
-        <ListView Height="480" Margin="0,10,0,0" x:Name="lvDeviceList" ItemsSource="{Binding}">
-            <ListView.Resources>
-                <ContextMenu x:Key="ItemContextMenu" Name="deviceContextMenu" VerticalAlignment="Top">
-                    <MenuItem VerticalContentAlignment="Center" Click="RenameClick" IsEnabled="{Binding Path=IsInstalled}" Header="Rename"/>
-                    <MenuItem VerticalContentAlignment="Center" Click="InstallClick" IsEnabled="{Binding Path=IsInstalled, Converter={StaticResource InverseBooleanConverter}}" Header="Install"/>
-                    <MenuItem VerticalContentAlignment="Center" Click="UninstallClick" IsEnabled="{Binding Path=IsInstalled}" Header="Uninstall"/>
-                </ContextMenu>
-            </ListView.Resources>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel Margin="15,5,5,10">
-                        <StackPanel>
-                            <Label 
-                                IsEnabled="{Binding Path=IsInstalled, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" 
-                                Padding="0" 
-                                FontSize="20" 
-                                Content="{Binding Path=DeviceName, 
-                                UpdateSourceTrigger=PropertyChanged, 
-                                Mode=OneWay}"/>
-                            <Label 
-                                IsEnabled="{Binding Path=IsInstalled, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" 
-                                Padding="0" 
-                                Content="{Binding Path=DeviceId, 
-                                UpdateSourceTrigger=PropertyChanged, 
-                                Mode=OneWay}"/>
-                        </StackPanel>
-                        <DockPanel IsEnabled="True" HorizontalAlignment="Right">
-                            <mah:ToggleSwitch 
-                                Width="140"
-                                Margin="0"
-                                IsEnabled="{Binding Path=IsInstalled, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                Toggled="ToggleSwitchToggled" 
-                                IsOn="{Binding Path=IsEnabled, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" 
-                                OnContent="Enabled" 
-                                OffContent="Disabled"/>
-                            <Image ToolTip="Device Configuration"
-                                Margin="0"
-                                Height="24" 
-                                MouseLeftButtonUp="ImageMouseUp" 
-                                ContextMenu="{StaticResource ItemContextMenu}" 
-                                VerticalAlignment="Center" 
-                                Source="../Icons/settings_icon.png"/>
-                        </DockPanel>
-                    </DockPanel>
-                </DataTemplate>
-
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackPanel>
+        Title="EmuController Device Manager" Height="440" Width="600" ResizeMode="NoResize"
+        TitleCharacterCasing="Upper"
+                 WindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                 NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                 BorderBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                 NonActiveBorderBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                 DataContext="{Binding}">
+    <local:DeviceList></local:DeviceList>
 </mah:MetroWindow>
