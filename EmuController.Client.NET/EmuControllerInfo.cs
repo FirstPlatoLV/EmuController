@@ -55,7 +55,7 @@ namespace EmuController.Client.NET
 
             if (hwid != null)
             {
-                HardwareId = hwid.Substring(prefix.Length);
+                HardwareId = hwid[prefix.Length..];
             }
             else
             {
