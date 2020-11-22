@@ -50,13 +50,10 @@ typedef struct _NAMED_PIPE_SERVER_ATTRIBUTES
 	PSECURITY_ATTRIBUTES PipeSecurityAttr;
 } NAMED_PIPE_SERVER_ATTRIBUTES, * PNAMED_PIPE_SERVER_ATTRIBUTES;
 
-
 //
 // The device context performs the same job as
 // a WDM device extension in the driver frameworks
 //
-
-
 typedef struct _DEVICE_CONTEXT
 {
 	WDFDEVICE Device;
@@ -68,7 +65,7 @@ typedef struct _DEVICE_CONTEXT
 	HID_XFER_PACKET ReportPacket;
 	JOYSTICK_INPUT_REPORT JoyInputReport;
 	PID_STATE_REPORT JoyPidStateReport;
-	UCHAR EffectBlockIndex;
+	ULONG64 SetEffectBlocks;
 	NAMED_PIPE_SERVER_ATTRIBUTES PipeServerAttributes;
 } DEVICE_CONTEXT, * PDEVICE_CONTEXT;
 

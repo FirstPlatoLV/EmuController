@@ -533,7 +533,7 @@ CreatePipeSecurity(
 	}
 
 	// Allocate the memory of SECURITY_ATTRIBUTES.
-	pSa = (PSECURITY_ATTRIBUTES)LocalAlloc(LPTR, sizeof(*pSa));
+	pSa = (PSECURITY_ATTRIBUTES)HeapAlloc(GetProcessHeap(), 0, sizeof(*pSa));
 	if (pSa == NULL)
 	{
 		fSucceeded = FALSE;

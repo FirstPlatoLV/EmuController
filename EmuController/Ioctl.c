@@ -206,7 +206,7 @@ Return Value:
 
 		if (pDc->DeviceControlCommand == PID_DEVICE_RESET_CMD)
 		{
-			QueueContext->DeviceContext->EffectBlockIndex = 0;
+			QueueContext->DeviceContext->SetEffectBlocks = 0;
 			QueueContext->DeviceContext->JoyPidStateReport.DevicePaused = 0;
 			QueueContext->DeviceContext->JoyPidStateReport.ReportId = PID_INPUT_REPORT_ID;
 			QueueContext->DeviceContext->JoyPidStateReport.ActuatorPower = 1;
@@ -392,7 +392,6 @@ Return Value:
 	HID_XFER_PACKET         packet;
 	ULONG                   reportSize;
 
-
 	status = RequestGetHidXferPacket_ToReadFromDevice(
 		Request,
 		&packet);
@@ -430,23 +429,21 @@ Return Value:
 	case PID_BLOCK_LOAD_REPORT_ID:
 	{
 		PPID_BLOCK_LOAD_REPORT pidBlockLoadReport = (PPID_BLOCK_LOAD_REPORT)packet.reportBuffer;
-
-		pidBlockLoadReport->RamPoolAvailable = 65535;
-
-		if (QueueContext->DeviceContext->EffectBlockIndex > MAX_EFFECT_BLOCKS)
-		{
-			pidBlockLoadReport->BlockLoadStatus = 2;
-		}
-		else
-		{
-			pidBlockLoadReport->BlockLoadStatus = 1;
-			pidBlockLoadReport->EffectBlockIndex = QueueContext->DeviceContext->EffectBlockIndex;
-		}
-
 		pidBlockLoadReport->ReportId = PID_BLOCK_LOAD_REPORT_ID;
+		pidBlockLoadReport->RamPoolAvailable = 65535;
+		pidBlockLoadReport->BlockLoadStatus = 2;
 
-	
-		QueueContext->DeviceContext->ReportPacket = packet;
+		for (UCHAR i = 0; i < MAX_EFFECT_BLOCKS; i++) {
+			if (!((QueueContext->DeviceContext->SetEffectBlocks >> i) & 1ULL)) {
+				QueueContext->DeviceContext->SetEffectBlocks |= 1ULL << i;
+				pidBlockLoadReport->EffectBlockIndex = i + 1;
+				pidBlockLoadReport->BlockLoadStatus = 1;
+
+				TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL,
+					"EffectBlockIndex has been assigned: [%d]\n", i + 1);
+				break;
+			}
+		}
 
 		WriteResponseToPidClient(QueueContext);
 		break;
@@ -465,7 +462,15 @@ Return Value:
 	}
 	case PID_BLOCK_FREE_REPORT_ID:
 	{
-		QueueContext->DeviceContext->ReportPacket = packet;
+		PPID_BLOCK_FREE_REPORT pBlockFree = (PPID_BLOCK_FREE_REPORT)packet.reportBuffer;
+		if (pBlockFree->EffectBlockIndex > 0)
+		{
+			QueueContext->DeviceContext->SetEffectBlocks &= ~(1ULL << (pBlockFree->EffectBlockIndex - 1));
+
+			TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_IOCTL,
+				"EffectBlockIndex has been unassigned: [%d]\n", pBlockFree->EffectBlockIndex);
+		}
+		
 		WriteResponseToPidClient(QueueContext);
 		break;
 	}
@@ -508,7 +513,6 @@ Return Value:
 	HID_XFER_PACKET         packet;
 	ULONG                   reportSize;
 
-
 	status = RequestGetHidXferPacket_ToWriteToDevice(
 		Request,
 		&packet);
@@ -530,12 +534,6 @@ Return Value:
 			"SetFeature: input buffer too small!");
 		return status;
 	}
-
-	if (packet.reportId == PID_NEW_EFFECT_REPORT_ID)
-	{
-		QueueContext->DeviceContext->EffectBlockIndex++;
-	}
-
 
 	QueueContext->DeviceContext->ReportPacket = packet;
 
