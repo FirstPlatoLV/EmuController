@@ -85,7 +85,7 @@ typedef struct _MESSAGE_HEADER
 #define PID_POOL_REPORT_ID 0x22
 
 // Maximum number of EffectIndexBlocks & Simulatenous effects playing.
-#define MAX_EFFECT_BLOCKS 0x7F
+#define MAX_EFFECT_BLOCKS 0x40
 
 #define PID_DEVICE_RESET_CMD 0x04 
 
@@ -121,14 +121,14 @@ typedef struct _PID_STATE_REPORT
 	UCHAR : 3;	// Pad
 
     UCHAR ReportEffectPlaying : 1;	// Value = 0 to 1
-    UCHAR EffectBlockIndex : 7;	// Value = 1 to MAX_EFFECT_BLOCKS (127)
+    UCHAR EffectBlockIndex : 7;	// Value = 1 to MAX_EFFECT_BLOCKS(64)
 } PID_STATE_REPORT, * PPID_STATE_REPORT;
 
 
 typedef struct _PID_SET_EFFECT_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x10
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	UCHAR EffectType;	// Constant = 1,
 				// Ramp = 2,
 				// Square = 3,
@@ -162,7 +162,7 @@ typedef struct _PID_SET_EFFECT_REPORT
 typedef struct _PID_SET_ENVELOPE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x11
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	USHORT AttackLevel; // Value = 0 to 10000
 	USHORT FadeLevel; // Value = 0 to 10000
 	USHORT AttackTime; // Value = 0 to 10000
@@ -173,7 +173,7 @@ typedef struct _PID_SET_ENVELOPE_REPORT
 typedef struct _PID_SET_CONDITION_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x12
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	UCHAR ParameterBlockOffset : 4; // Value = 0 to 1
 	UCHAR TypeSpecificBlockOffsetInstance1 : 2; // Value = 0 to 1
 	UCHAR TypeSpecificBlockOffsetInstance2 : 2; // Value = 0 to 1
@@ -188,7 +188,7 @@ typedef struct _PID_SET_CONDITION_REPORT
 typedef struct _PID_SET_PERIODIC_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x13
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	USHORT Magnitude;	// Value = 0 to 10000
 	SHORT Offset;	// Value = -10000 to 10000
 	USHORT Phase;	// Value = 0 to 36000
@@ -198,14 +198,14 @@ typedef struct _PID_SET_PERIODIC_REPORT
 typedef struct _PID_SET_CONSTANT_FORCE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x14
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	SHORT Magnitude; // Value = -10000 to 10000
 } PID_SET_CONSTANT_FORCE_REPORT, * PPID_SET_CONSTANT_FORCE_REPORT;
 
 typedef struct _PID_SET_RAMP_FORCE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x15
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	SHORT RampStart;  // Value = -10000 to 10000
 	SHORT RampEnd;    // Value = -10000 to 10000
 } PID_SET_RAMP_FORCE_REPORT, * PPID_SET_RAMP_FORCE_REPORT;
@@ -213,7 +213,7 @@ typedef struct _PID_SET_RAMP_FORCE_REPORT
 typedef struct _PID_SET_CUSTOM_FORCE_DATA_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x16
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	USHORT CustomForceDataOffset; // Value = 0 to 10000
 	UCHAR CustomForceData[12];
 } PID_SET_CUSTOM_FORCE_DATA_REPORT, * PPID_SET_CUSTOM_FORCE_DATA_REPORT;
@@ -221,7 +221,7 @@ typedef struct _PID_SET_CUSTOM_FORCE_DATA_REPORT
 typedef struct _PID_DOWNLOAD_SAMPLE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x17
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	CHAR  ForceSampleX; // Value = -127 to 127
 	CHAR  ForceSampleY; // Value = -127 to 127
 } PID_DOWNLOAD_SAMPLE_REPORT, * PPID_DOWNLOAD_SAMPLE_REPORT;
@@ -230,7 +230,7 @@ typedef struct _PID_DOWNLOAD_SAMPLE_REPORT
 typedef struct _PID_EFFECT_OPERATION_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x18
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	UCHAR EffectOperation;	// Start = 1,
 					// StartSolo = 2,
 					// Stop = 3
@@ -253,7 +253,7 @@ typedef struct _PID_DEVICE_CONTROL_REPORT
 typedef struct _PID_BLOCK_FREE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x1A
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 } PID_BLOCK_FREE_REPORT, * PPID_BLOCK_FREE_REPORT;
 
 
@@ -267,7 +267,7 @@ typedef struct _PID_DEVICE_GAIN_REPORT
 typedef struct _PID_SET_CUSTOM_FORCE_REPORT
 {
 	UCHAR ReportId;	// Report ID = 0x1C
-	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 	UCHAR SampleCount; // Value = 0 to 255
 	USHORT SamplePeriod; // Value = 0 to 10000
 } PID_SET_CUSTOM_FORCE_REPORT, * PPID_SET_CUSTOM_FORCE_REPORT;
@@ -295,7 +295,7 @@ typedef struct _PID_NEW_EFFECT_REPORT
 typedef struct _PID_BLOCK_LOAD_REPORT
 {
 	UCHAR  ReportId;	// Report ID = 0x21
-	UCHAR  EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(127); 
+	UCHAR  EffectBlockIndex; // Value = 1 to MAX_EFFECT_BLOCKS(64); 
 					// Value = 0 if operation fails.
 	UCHAR  BlockLoadStatus; // Success = 1
 				// Full = 2
@@ -311,7 +311,7 @@ typedef struct _PID_POOL_REPORT
 {
 	UCHAR  ReportId; // Report ID = 0x22
 	USHORT RamPoolSize;  // Value = 0 to 65535
-	UCHAR  SimultaneousEffectsMax; // MAX_EFFECT_BLOCKS(127);
+	UCHAR  SimultaneousEffectsMax; // MAX_EFFECT_BLOCKS(64);
 	UCHAR  DeviceManagedPool : 1; // Value = 0 to 1
 	UCHAR  SharedParameterBlocks : 1; // Value = 0 to 1
 	UCHAR : 6;
