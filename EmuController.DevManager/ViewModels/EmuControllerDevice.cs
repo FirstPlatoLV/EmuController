@@ -27,28 +27,19 @@ namespace EmuController.DevManager.ViewModels
             get => deviceName; set { deviceName = value; OnPropertyChanged(); }
         }
 
-        private string deviceNewName;
-        public string DeviceNewName
-        {
-            get => deviceNewName; set { deviceNewName = value; OnPropertyChanged(); }
-        }
-
         private string deviceId;
-
         public string DeviceId
         {
             get => deviceId; set { deviceId = value; OnPropertyChanged(); }
         }
 
         private bool isEnabled;
-
         public bool IsEnabled
         {
             get => isEnabled; set { isEnabled = value; OnPropertyChanged(); }
         }
 
         private bool isInstalled;
-
         public bool IsInstalled
         {
             get => isInstalled; 

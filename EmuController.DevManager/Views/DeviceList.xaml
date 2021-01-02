@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:iconPacks="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Unicons"
+             xmlns:iconPacks="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.BoxIcons"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -65,6 +65,7 @@
                                 Background="Transparent"
                                 BorderBrush="Transparent"
                                 BorderThickness="0"
+                                ArrowVisibility="Collapsed"
                                 ArrowMouseOverBrush="DarkGray"
                                 ButtonStyle="{DynamicResource MahApps.Styles.Button.Square}">
                             <mah:DropDownButton.ItemContainerStyle>
@@ -87,7 +88,7 @@
                                 </Style>
                             </mah:DropDownButton.ItemContainerStyle>
                             <mah:DropDownButton.Icon>
-                                <iconPacks:PackIconUnicons Kind="Setting" Width="20" Height="20"/>
+                                <iconPacks:BoxIcons Kind="RegularDotsHorizontalRounded" Width="20" Height="20"/>
                             </mah:DropDownButton.Icon>
                         </mah:DropDownButton>
                     </DockPanel>

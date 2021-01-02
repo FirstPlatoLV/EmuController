@@ -1,8 +1,4 @@
-﻿using EmuController.Client.NET.PID;
-using System;
-using System.Text;
-using System.Threading;
-using System.Security.Cryptography;
+﻿using System;
 
 namespace EmuController.Client.NET.Demo
 {

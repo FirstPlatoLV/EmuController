@@ -14,7 +14,7 @@ namespace EmuController.Client.NET.Input.Tests
         [TestMethod()]
         public void SetValueTest()
         {
-            EmuInputState emu = new EmuInputState();
+            EmuControllerInputState emu = new EmuControllerInputState();
 
             Random rndVal = new Random();
 

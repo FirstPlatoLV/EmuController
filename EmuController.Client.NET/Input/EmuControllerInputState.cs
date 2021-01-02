@@ -11,23 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-using EmuController.Client.NET.PID;
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmuController.Client.NET.Input
 {
-    public class EmuInputState
+    public class EmuControllerInputState : IInputState
     {
         private const int MessageLengthMax = 128;
         private const int MessageHeaderLength = 2;
@@ -47,13 +39,13 @@ namespace EmuController.Client.NET.Input
         /// </summary>
         public Buttons Buttons { get; private set; }
 
-        public EmuInputState()
+        public EmuControllerInputState()
         {
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
             CreateDefaultState();
         }
 
-        internal void CreateDefaultState()
+        public void CreateDefaultState()
         {
             Axes = new Axes();
             Buttons = new Buttons();

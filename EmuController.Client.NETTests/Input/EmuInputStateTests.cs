@@ -13,7 +13,7 @@ namespace EmuController.Client.NET.Input.Tests
         public void GetInputReportMessageTest()
         {
             int headerSize = 2;
-            EmuInputState emu = new EmuInputState();
+            EmuControllerInputState emu = new EmuControllerInputState();
             byte[] message = emu.GetInputReportMessage();
             Assert.IsTrue(message.Length == message[1] + headerSize);
 
@@ -30,7 +30,7 @@ namespace EmuController.Client.NET.Input.Tests
         {
             Random rndVal = new Random();
             int headerSize = 2;
-            EmuInputState emu = new EmuInputState();
+            EmuControllerInputState emu = new EmuControllerInputState();
 
             for (int i = 0; i < 100; i++)
             {

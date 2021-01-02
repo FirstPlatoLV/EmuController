@@ -16,7 +16,6 @@ using EmuController.Client.NET.PID;
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
-using System.Management;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,16 +23,12 @@ namespace EmuController.Client.NET
 {
     public class EmuControllerClient : IDisposable
     {
-
-        private readonly Guid EmuControllerClassGuid = Guid.Parse("4DB9B76D-4379-437E-9457-4F00B3090C1F");
-
         /// <summary>
         /// The event that is signaled once FFB data is sent from application (game) to EmuController device.
         /// The FFBPacket property contains the data.
         /// </summary>
         public event EventHandler<FFBDataReceivedEventArgs> FFBDataReceived;
 
-        private ManagementObjectSearcher ManagementObjectSearcher;
         private CancellationTokenSource TaskCancelToken;
 
         private EmuControllerInfo InstanceInfo;
@@ -47,7 +42,7 @@ namespace EmuController.Client.NET
         /// <summary>
         /// The input state of the EmuController device with default values set.
         /// </summary>
-        public EmuInputState InputState { get; private set; }
+        public IInputState InputState { get; private set; }
 
         /// <summary>
         /// List of detected active EmuController devices.
@@ -106,7 +101,7 @@ namespace EmuController.Client.NET
         /// </summary>
         public EmuControllerClient()
         {
-            InputState = new EmuInputState();
+            InputState = new EmuControllerInputState();
             GetEmuControllers();
         }
 
@@ -259,28 +254,12 @@ namespace EmuController.Client.NET
                 InputPipeClient.Dispose();
                 FFBPipeClient.Dispose();
                 TaskCancelToken.Dispose();
-                ManagementObjectSearcher.Dispose();
             }
         }
 
         private void GetEmuControllers()
         {
-
-            string scope = "root\\CIMV2";
-            string classGuid = "{" + EmuControllerClassGuid.ToString() + "}";
-         
-
-            string queryString = $"SELECT * FROM Win32_PnPSignedDriver WHERE ClassGuid = '{classGuid}'";
-            ManagementObjectSearcher = new ManagementObjectSearcher(scope, queryString);
-            EmuControllerDevices = new List<EmuControllerInfo>();
-
-            // All active EmuController devices will be returned when quering PnPEntities 
-            // matching EmuController classGuid.
-            foreach (ManagementObject queryObj in ManagementObjectSearcher.Get())
-            {
-                EmuControllerInfo info = new EmuControllerInfo(queryObj);
-                EmuControllerDevices.Add(info);
-            }
+            EmuControllerDevices = WMIPnpEntity.Instance.GetEmuControllers();
         }
 
     }

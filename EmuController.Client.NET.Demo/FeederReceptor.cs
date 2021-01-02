@@ -1,7 +1,6 @@
 ﻿using EmuController.Client.NET.Input;
 using EmuController.Client.NET.PID;
 using System;
-using System.Threading;
 
 namespace EmuController.Client.NET.Demo
 {
@@ -55,32 +54,34 @@ namespace EmuController.Client.NET.Demo
                 // This is useful, when you want to directly bind from Axis array returned by DirectInput to Emucontroller, specifying indices for both, or example:
                 // DirectInput Device Axis Array[i].value to EmuController Axes.SetAxis((AxisEnum)i, value);
 
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisZ, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisRx, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisRy, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisRz, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisSlider, (ushort)rndVal.Next(0, 65535));
-                EmuClient.InputState.Axes.SetValue(AxisEnum.AxisDial, (ushort)rndVal.Next(0, 65535));
+                EmuControllerInputState ctrlState = (EmuControllerInputState)EmuClient.InputState;
+
+                ctrlState.Axes.SetValue(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisY, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisZ, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisRx, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisRy, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisRz, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisSlider, (ushort)rndVal.Next(0, 65535));
+                ctrlState.Axes.SetValue(AxisEnum.AxisDial, (ushort)rndVal.Next(0, 65535));
 
                 // Supports 128 buttons that fit in 16 bytes.
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(0, 31), true);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(0, 31), false);
+                ctrlState.Buttons.SetValue(rndVal.Next(0, 31), true);
+                ctrlState.Buttons.SetValue(rndVal.Next(0, 31), false);
 
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(0, 31), true);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(0, 31), false);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(32, 127), true);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(32, 127), false);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(32, 127), true);
-                EmuClient.InputState.Buttons.SetValue(rndVal.Next(32, 127), false);
+                ctrlState.Buttons.SetValue(rndVal.Next(0, 31), true);
+                ctrlState.Buttons.SetValue(rndVal.Next(0, 31), false);
+                ctrlState.Buttons.SetValue(rndVal.Next(32, 127), true);
+                ctrlState.Buttons.SetValue(rndVal.Next(32, 127), false);
+                ctrlState.Buttons.SetValue(rndVal.Next(32, 127), true);
+                ctrlState.Buttons.SetValue(rndVal.Next(32, 127), false);
 
                 // Supports 4 dpads that have 8 directions. -1 = Null, 0 = North, 
                 // incrementing value will advance the dpad position 45 degrees clockwise;
-                EmuClient.InputState.DPads.SetValue(0, (DPadDirectionEnum)rndVal.Next(-1, 7));
-                EmuClient.InputState.DPads.SetValue(1, (DPadDirectionEnum)rndVal.Next(-1, 7));
-                EmuClient.InputState.DPads.SetValue(2, (DPadDirectionEnum)rndVal.Next(-1, 7));
-                EmuClient.InputState.DPads.SetValue(3, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                ctrlState.DPads.SetValue(0, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                ctrlState.DPads.SetValue(1, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                ctrlState.DPads.SetValue(2, (DPadDirectionEnum)rndVal.Next(-1, 7));
+                ctrlState.DPads.SetValue(3, (DPadDirectionEnum)rndVal.Next(-1, 7));
 
                 // There are two ways to update EmuController.
                 // First one sends the whole input report.
@@ -98,7 +99,7 @@ namespace EmuController.Client.NET.Demo
         private void FFBDataReceived(object sender, FFBDataReceivedEventArgs e)
         {
             // Outputs packet type that EmuController received.
-           // Console.WriteLine(e.ReportId.ToString());
+            Console.WriteLine(e.ReportId.ToString());
         }
     }
 }

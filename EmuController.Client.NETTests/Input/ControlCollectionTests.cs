@@ -12,7 +12,7 @@ namespace EmuController.Client.NET.Input.Tests
         [TestMethod()]
         public void GetUpdatedValuesTest()
         {
-            EmuInputState emu = new EmuInputState();
+            EmuControllerInputState emu = new EmuControllerInputState();
 
             emu.Buttons.SetValue(0, true);
             emu.Buttons.SetValue(0, false);

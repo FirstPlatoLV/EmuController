@@ -49,7 +49,7 @@ namespace EmuController.DevManager.Views
             DataContext = this;
         }
 
-        private bool IsOSSupported()
+        private static bool IsOSSupported()
         {
             bool result = true;
             OperatingSystem env = Environment.OSVersion;

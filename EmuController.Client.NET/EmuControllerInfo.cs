@@ -14,7 +14,6 @@
 using System;
 using System.IO;
 using System.Management;
-using System.Reflection;
 
 namespace EmuController.Client.NET
 {
@@ -38,17 +37,17 @@ namespace EmuController.Client.NET
         public EmuControllerInfo(ManagementObject queryObj)
         {
 
-            string hwid = (string)queryObj.Properties[nameof(HardwareId)].Value;
+            string hwid = ((string[])queryObj.Properties["HardwareID"].Value)[0];
 
-            Version driverVersion = new Version((string)queryObj.Properties["DriverVersion"].Value);
-            Version clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            //Version driverVersion = new Version((string)queryObj.Properties["DriverVersion"].Value);
+            //Version clientVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-            if (clientVersion.Major != driverVersion.Major || clientVersion.Minor != driverVersion.Minor)
-            {
-                throw new EmuControllerException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
-                    driverVersion.Major, driverVersion.Minor, 
-                    clientVersion.Major, clientVersion.Minor));
-            }
+            //if (clientVersion.Major != driverVersion.Major || clientVersion.Minor != driverVersion.Minor)
+            //{
+            //    throw new EmuControllerException(string.Format("Version mismatch! Driver: {0}.{1}, Client: {2}.{3}", 
+            //        driverVersion.Major, driverVersion.Minor, 
+            //        clientVersion.Major, clientVersion.Minor));
+            //}
 
             // We need only the Vīd/Pid information about the device
             string prefix = "ROOT\\";
@@ -67,7 +66,7 @@ namespace EmuController.Client.NET
             Name = GetDeviceFriendlyName(HardwareId);
         }
 
-        private string GetDeviceFriendlyName(string hwId)
+        private static string GetDeviceFriendlyName(string hwId)
         {
             if (string.IsNullOrEmpty(hwId))
             {
